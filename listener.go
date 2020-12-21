@@ -14,7 +14,8 @@ const (
 	connHost = "localhost"
 	connPort = "3333"
 	connType = "tcp"
-	mb       = float64(1024 ^ 2)
+	mb       = float64(1048576)
+	page     = float64(4096)
 )
 
 // listener listens for connections from njmon.  It forks handleConnectinon() for each connection.
@@ -101,6 +102,21 @@ func handleConnection(conn net.Conn) {
 	aixVersion.WithLabelValues(hostname).Set(jp.Get("server.aix_version").Float())
 	aixTechLevel.WithLabelValues(hostname).Set(jp.Get("server.aix_technology_level").Float())
 	aixServicePack.WithLabelValues(hostname).Set(jp.Get("server.aix_service_pack").Float())
+	// config
+	memOnline.WithLabelValues(hostname).Set(jp.Get("config.mem_online").Float() * mb)
+	memMax.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
+	// memory
+	memRealFree.WithLabelValues(hostname).Set(jp.Get("memory.real_free").Float() * page)
+	memRealInUse.WithLabelValues(hostname).Set(jp.Get("memory.real_inuse").Float() * page)
+	memRealPinned.WithLabelValues(hostname).Set(jp.Get("memory.real_pinned").Float() * page)
+	memRealProcess.WithLabelValues(hostname).Set(jp.Get("memory.real_process").Float() * page)
+	memRealSystem.WithLabelValues(hostname).Set(jp.Get("memory.real_system").Float() * page)
+	memRealTotal.WithLabelValues(hostname).Set(jp.Get("memory.real_total").Float() * page)
+	memRealUser.WithLabelValues(hostname).Set(jp.Get("memory.real_user").Float() * page)
+	// cpu_details
+	cpuNumActive.WithLabelValues(hostname).Set(jp.Get("cpu_details.cpus_active").Float())
+	cpuNumConf.WithLabelValues(hostname).Set(jp.Get("cpu_details.cpus_configured").Float())
+	cpuMHz.WithLabelValues(hostname).Set(jp.Get("cpu_details.mhz").Float())
 	// cpu_util
 	cpuTotIdle.WithLabelValues(hostname).Set(jp.Get("cpu_util.idle_pct").Float())
 	cpuTotKern.WithLabelValues(hostname).Set(jp.Get("cpu_util.kern_pct").Float())
