@@ -5,43 +5,49 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-yaml/yaml"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"gopkg.in/yaml.v2"
 )
 
 // Config contains the njmon_exporter configuration data
 type Config struct {
-	Listen struct {
-		address string
-		port    int
-	} `yaml:"listen"`
+	NJmon struct {
+		Address string `yaml:"address"`
+		Port    string `yaml:"port"`
+	} `yaml:"njmon"`
+	Exporter struct {
+		Address string `yaml:"address"`
+		Port    string `yaml:"port"`
+	} `yaml:"exporter"`
 }
 
-func readConfig(filename string) error {
-	f, err := os.Open(filename)
+// newConfig imports a yaml formatted config file into a Config struct
+func newConfig(filename string) (*Config, error) {
+	file, err := os.Open(filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer f.Close()
+	defer file.Close()
 
-	decoder := yaml.NewDecoder(f)
-	err = decoder.Decode(&cfg)
-	fmt.Println(cfg)
-	if err != nil {
-		return err
+	d := yaml.NewDecoder(file)
+	config := &Config{}
+	if err := d.Decode(&config); err != nil {
+		return nil, err
 	}
-	return nil
+	return config, nil
 }
 
-var cfg Config
+// Create a global configuration
+var cfg *Config
 
 func main() {
-	err := readConfig("njmon_exporter.yml")
+	var err error
+	cfg, err = newConfig("njmon_exporter.yml")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(cfg)
 	go listener()
 	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":8080", nil)
+	exporter := fmt.Sprintf("%s:%s", cfg.Exporter.Address, cfg.Exporter.Port)
+	http.ListenAndServe(exporter, nil)
 }

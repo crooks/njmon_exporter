@@ -11,24 +11,22 @@ import (
 )
 
 const (
-	connHost = "localhost"
-	connPort = "3333"
-	connType = "tcp"
-	mb       = float64(1048576)
-	page     = float64(4096)
+	mb   = float64(1048576)
+	page = float64(4096)
 )
 
 // listener listens for connections from njmon.  It forks handleConnectinon() for each connection.
 func listener() {
+	njmonListen := fmt.Sprintf("%s:%s", cfg.NJmon.Address, cfg.NJmon.Port)
 	// Listen for incoming connections.
-	l, err := net.Listen(connType, connHost+":"+connPort)
+	l, err := net.Listen("tcp", njmonListen)
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
 	// Close the listener when the application closes.
 	defer l.Close()
-	fmt.Println("Listening on " + connHost + ":" + connPort)
+	fmt.Printf("Listening for njmon connections on %s\n", njmonListen)
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
