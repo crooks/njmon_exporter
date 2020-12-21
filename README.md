@@ -1,0 +1,1 @@
+njmon_exporter is written to provide an interface between Prometheus and the AIX njmon tool (http://nmon.sourceforge.net/pmwiki.php?n=Site.Njmon).  It will listen for incoming connections from njmon on a configured port and then present metrics to Prometheus.
