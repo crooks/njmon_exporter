@@ -17,6 +17,7 @@ const (
 	mb       = float64(1024 ^ 2)
 )
 
+// listener listens for connections from njmon.  It forks handleConnectinon() for each connection.
 func listener() {
 	// Listen for incoming connections.
 	l, err := net.Listen(connType, connHost+":"+connPort)
@@ -39,29 +40,16 @@ func listener() {
 	}
 }
 
-func jFloat(result gjson.Result, f string) (float64, error) {
-	value := result.Get(f)
-	if !value.Exists() {
-		return 0, fmt.Errorf("%s: Field not found", f)
-	}
-	return value.Float(), nil
-}
-
 func filesystems(hostname string, result gjson.Result) {
 	for _, f := range result.Map() {
+		// Required labels for filesystems
 		device := f.Get("device").String()
 		mount := f.Get("mount").String()
-
-		size, err := jFloat(f, "size_mb")
-		if err != nil {
-			fmt.Println(err)
-		}
-		free, err := jFloat(f, "free_mb")
-		if err != nil {
-			fmt.Println(err)
-		}
-		filesystemSize.WithLabelValues(hostname, device, mount).Set(size * mb)
-		filesystemFree.WithLabelValues(hostname, device, mount).Set(free * mb)
+		// Filesystem metrics
+		size := f.Get("size_mb").Float() * mb
+		free := f.Get("free_mb").Float() * mb
+		filesystemSize.WithLabelValues(hostname, device, mount).Set(size)
+		filesystemFree.WithLabelValues(hostname, device, mount).Set(free)
 	}
 }
 
