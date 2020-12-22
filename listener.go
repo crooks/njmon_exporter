@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
-	"os"
 	"time"
 
 	"github.com/tidwall/gjson"
@@ -21,18 +21,17 @@ func listener() {
 	// Listen for incoming connections.
 	l, err := net.Listen("tcp", njmonListen)
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
-		os.Exit(1)
+		log.Fatalf("Unable to start njmon listener: %v", err)
 	}
 	// Close the listener when the application closes.
 	defer l.Close()
-	fmt.Printf("Listening for njmon connections on %s\n", njmonListen)
+	log.Printf("Listening for njmon connections on %s\n", njmonListen)
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
-			os.Exit(1)
+			log.Printf("Unable to accept njmon connection: %v", err)
+			continue
 		}
 		// Handle connections in a new goroutine.
 		go handleConnection(conn)
@@ -81,7 +80,8 @@ func handleConnection(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 	buf, err := reader.ReadBytes('\x0a')
 	if err != nil {
-		panic(err)
+		log.Printf("Error reading njmon data: %v", err)
+		return
 	}
 	// Close the connection when you're done with it.
 	conn.Close()
@@ -90,7 +90,7 @@ func handleConnection(conn net.Conn) {
 
 	jvalue := jp.Get("identity.hostname")
 	if !jvalue.Exists() {
-		fmt.Println("Unable to register hostname")
+		log.Println("Unable to read hostname from njmon json")
 		return
 	}
 	hostname := jvalue.String()
