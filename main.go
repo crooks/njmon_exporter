@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -21,6 +23,10 @@ type Config struct {
 	} `yaml:"exporter"`
 }
 
+var (
+	flagConfigFile string // Fully-qualified path to config file
+)
+
 // newConfig imports a yaml formatted config file into a Config struct
 func newConfig(filename string) (*Config, error) {
 	file, err := os.Open(filename)
@@ -37,14 +43,26 @@ func newConfig(filename string) (*Config, error) {
 	return config, nil
 }
 
+func parseFlags() {
+	flag.StringVar(
+		&flagConfigFile,
+		"config",
+		"njmon_exporter.yml",
+		"Path to njmon_exporter configuration file",
+	)
+	flag.Parse()
+	return
+}
+
 // Create a global configuration
 var cfg *Config
 
 func main() {
 	var err error
-	cfg, err = newConfig("njmon_exporter.yml")
+	parseFlags()
+	cfg, err = newConfig(flagConfigFile)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Unable to parse config file: %v", err)
 	}
 	go listener()
 	http.Handle("/metrics", promhttp.Handler())

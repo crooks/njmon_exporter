@@ -7,7 +7,7 @@ Prometheus exporter for IBM AIX systems running njmon.
 - [x] Export initial metrics to Prometheus exporter format and serve them
 - [x] Add support for a yaml configuration file
 - [x] Register an exporter port in the [Prometheus Wiki](https://github.com/prometheus/prometheus/wiki/Default-port-allocations)
-- [ ] Support command line flags
+- [x] Support command line flags
 - [ ] Logging
 - [ ] Config validation support
 - [ ] Provide decent unit test coverage
