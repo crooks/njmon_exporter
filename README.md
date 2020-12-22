@@ -15,7 +15,7 @@ Prometheus exporter for IBM AIX systems running [njmon](http://nmon.sourceforge.
 
 ## Overview
 njmon_exporter provides an interface between Prometheus and the AIX njmon tool (http://nmon.sourceforge.net/pmwiki.php?n=Site.Njmon).  It listens for the connections described below:
-* njmon instances running on IBM AIX systems (Default port: 8081)
+* njmon instances running on IBM AIX systems (Default port: 8086)
 * Promtheus scrapes (Default port: 9772)
 
 ## Usage
