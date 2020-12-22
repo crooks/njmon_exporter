@@ -45,7 +45,7 @@ var (
 	cpuMHz = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_details_mhz",
-			Help: "CPU speed in nMHz",
+			Help: "CPU speed in MHz",
 		},
 		[]string{"lpar"},
 	)
