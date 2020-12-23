@@ -1,0 +1,5 @@
+# Ignore the generated binary file
+njmon_exporter
+
+# Ignore json files, they're used for testing and could be sensitive
+*.json
