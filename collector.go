@@ -189,7 +189,7 @@ var (
 	// Timestamp
 	clockDrift = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "njmon_time_drift",
+			Name: "njmon_clock_drift",
 			Help: "Difference between remote UTC and local UTC in seconds",
 		},
 		[]string{"lpar"},
