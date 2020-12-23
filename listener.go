@@ -53,10 +53,11 @@ func filesystems(hostname string, result gjson.Result) {
 
 func cpuLogical(hostname string, result gjson.Result) {
 	for cpuNum, f := range result.Map() {
-		cpuLogIdle.WithLabelValues(hostname, cpuNum).Set(f.Get("idle").Float())
-		cpuLogSys.WithLabelValues(hostname, cpuNum).Set(f.Get("sys").Float())
-		cpuLogUser.WithLabelValues(hostname, cpuNum).Set(f.Get("user").Float())
-		cpuLogWait.WithLabelValues(hostname, cpuNum).Set(f.Get("wait").Float())
+		// Divide these by 100 to express percentages as 0-1.
+		cpuLogIdle.WithLabelValues(hostname, cpuNum).Set(f.Get("idle").Float() / 100)
+		cpuLogSys.WithLabelValues(hostname, cpuNum).Set(f.Get("sys").Float() / 100)
+		cpuLogUser.WithLabelValues(hostname, cpuNum).Set(f.Get("user").Float() / 100)
+		cpuLogWait.WithLabelValues(hostname, cpuNum).Set(f.Get("wait").Float() / 100)
 	}
 }
 
