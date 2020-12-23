@@ -104,6 +104,9 @@ func handleConnection(conn net.Conn) {
 	memOnline.WithLabelValues(hostname).Set(jp.Get("config.mem_online").Float() * mb)
 	memMax.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
 	// memory
+	memPgspFree.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_free").Float() * page)
+	memPgspRsvd.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_rsvd").Float() * page)
+	memPgspTotal.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_total").Float() * page)
 	memRealFree.WithLabelValues(hostname).Set(jp.Get("memory.real_free").Float() * page)
 	memRealInUse.WithLabelValues(hostname).Set(jp.Get("memory.real_inuse").Float() * page)
 	memRealPinned.WithLabelValues(hostname).Set(jp.Get("memory.real_pinned").Float() * page)

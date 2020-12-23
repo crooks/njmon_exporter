@@ -137,6 +137,27 @@ var (
 		},
 		[]string{"lpar"},
 	)
+	memPgspFree = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_pgsp_free",
+			Help: "Memory pagespace free in Bytes",
+		},
+		[]string{"lpar"},
+	)
+	memPgspRsvd = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_pgsp_rsvd",
+			Help: "Memory pagespace reserved in Bytes",
+		},
+		[]string{"lpar"},
+	)
+	memPgspTotal = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_pgsp_total",
+			Help: "Memory pagespace total in Bytes",
+		},
+		[]string{"lpar"},
+	)
 	memRealFree = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_free",
@@ -216,6 +237,9 @@ func init() {
 	prometheus.MustRegister(filesystemFree)
 	prometheus.MustRegister(memMax)
 	prometheus.MustRegister(memOnline)
+	prometheus.MustRegister(memPgspFree)
+	prometheus.MustRegister(memPgspRsvd)
+	prometheus.MustRegister(memPgspTotal)
 	prometheus.MustRegister(memRealFree)
 	prometheus.MustRegister(memRealInUse)
 	prometheus.MustRegister(memRealPinned)
