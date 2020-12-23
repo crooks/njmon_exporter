@@ -63,7 +63,11 @@ func cpuLogical(hostname string, result gjson.Result) {
 
 // clockDiff returns the difference (in seconds) between a supplied timestamp and local UTC
 func clockDiff(timestamp string) float64 {
-	format := "2006-01-02T15:05:05"
+	/*
+		The clock difference will be weighted by the scrape interval.
+		For alerting purposes, this must be taken into consideration.
+	*/
+	format := "2006-01-02T15:04:05"
 	t1, _ := time.Parse(format, timestamp)
 	t2 := time.Now().UTC()
 	// We always want a positive diff, regardless of which clock is ahead.
