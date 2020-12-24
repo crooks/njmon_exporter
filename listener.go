@@ -103,7 +103,12 @@ func handleConnection(conn net.Conn) {
 	}
 	hostname := jvalue.String()
 	clockDrift.WithLabelValues(hostname).Set(clockDiff(jp.Get("timestamp.UTC").String()))
-
+	// Uptime has only minute level granularity but we convert it to seconds for metric consistency.
+	uptimeDays := jp.Get("uptime.days").Float()
+	uptimeHours := jp.Get("uptime.hours").Float()
+	uptimeMins := jp.Get("uptime.minutes").Float()
+	uptimeSecs := (uptimeDays * 24 * 60 * 60) + (uptimeHours * 60 * 60) + (uptimeMins * 60)
+	systemUptime.WithLabelValues(hostname).Set(uptimeSecs)
 	// server
 	aixVersion.WithLabelValues(hostname).Set(jp.Get("server.aix_version").Float())
 	aixTechLevel.WithLabelValues(hostname).Set(jp.Get("server.aix_technology_level").Float())

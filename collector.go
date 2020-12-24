@@ -27,6 +27,14 @@ var (
 		},
 		[]string{"instance"},
 	)
+	// Timestamp
+	clockDrift = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_clock_drift",
+			Help: "Difference between remote UTC and local UTC in seconds",
+		},
+		[]string{"instance"},
+	)
 	// CPU Details
 	cpuNumActive = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -207,11 +215,10 @@ var (
 		},
 		[]string{"instance"},
 	)
-	// Timestamp
-	clockDrift = prometheus.NewGaugeVec(
+	systemUptime = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "njmon_clock_drift",
-			Help: "Difference between remote UTC and local UTC in seconds",
+			Name: "njmon_system_uptime",
+			Help: "System uptime in seconds",
 		},
 		[]string{"instance"},
 	)
@@ -247,4 +254,5 @@ func init() {
 	prometheus.MustRegister(memRealSystem)
 	prometheus.MustRegister(memRealTotal)
 	prometheus.MustRegister(memRealUser)
+	prometheus.MustRegister(systemUptime)
 }
