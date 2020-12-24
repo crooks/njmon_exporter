@@ -39,6 +39,8 @@ func listener() {
 	}
 }
 
+// filesystems iterates over the content of the njmon filesystems data and
+// produces a set of metrics for each filesystem.
 func filesystems(hostname string, result gjson.Result) {
 	for _, f := range result.Map() {
 		// Required labels for filesystems
@@ -52,6 +54,8 @@ func filesystems(hostname string, result gjson.Result) {
 	}
 }
 
+// cpuLogical iterates over the content of the njmon.cpu_logical data, writing
+// a set of metrics for each logical CPU.
 func cpuLogical(hostname string, result gjson.Result) {
 	for cpuNum, f := range result.Map() {
 		// Divide these by 100 to express percentages as 0-1.
@@ -65,8 +69,9 @@ func cpuLogical(hostname string, result gjson.Result) {
 // clockDiff returns the difference (in seconds) between a supplied timestamp and local UTC
 func clockDiff(timestamp string) float64 {
 	/*
-		The clock difference will be weighted by the scrape interval.
-		For alerting purposes, this must be taken into consideration.
+		The clock difference will be skewed by the latency between njmon
+		creating and the exporter receiving the metric. For alerting purposes,
+		a difference of several seconds should be tolerated.
 	*/
 	format := "2006-01-02T15:04:05"
 	t1, _ := time.Parse(format, timestamp)
@@ -81,6 +86,8 @@ func clockDiff(timestamp string) float64 {
 	return diff.Seconds()
 }
 
+// handleConnection processes each incoming TCP connection and translates the
+// received json into Prometheus metrics.
 func handleConnection(conn net.Conn) {
 	remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
 	log.Printf("Processing connection from: %s", remote)
