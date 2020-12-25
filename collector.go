@@ -215,6 +215,34 @@ var (
 		},
 		[]string{"instance"},
 	)
+	netPktRx = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_net_pkt_rx",
+			Help: "Network packet receive rate",
+		},
+		[]string{"instance", "interface"},
+	)
+	netPktTx = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_net_pkt_tx",
+			Help: "Network packet transmit rate",
+		},
+		[]string{"instance", "interface"},
+	)
+	netBpsRx = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_net_bps_rx",
+			Help: "Network bit/s receive rate",
+		},
+		[]string{"instance", "interface"},
+	)
+	netBpsTx = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_net_bps_tx",
+			Help: "Network bit/s transmit rate",
+		},
+		[]string{"instance", "interface"},
+	)
 	systemUptime = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_system_uptime",
@@ -254,5 +282,9 @@ func init() {
 	prometheus.MustRegister(memRealSystem)
 	prometheus.MustRegister(memRealTotal)
 	prometheus.MustRegister(memRealUser)
+	prometheus.MustRegister(netBpsRx)
+	prometheus.MustRegister(netBpsTx)
+	prometheus.MustRegister(netPktRx)
+	prometheus.MustRegister(netPktTx)
 	prometheus.MustRegister(systemUptime)
 }

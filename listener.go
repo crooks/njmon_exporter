@@ -54,6 +54,18 @@ func filesystems(hostname string, result gjson.Result) {
 	}
 }
 
+// netAdapters iterates over the content of the njmon network_adapters data and
+// produces a set of metrics for each interface.
+func netAdapters(hostname string, result gjson.Result) {
+	for i, f := range result.Map() {
+		// Required labels for filesystems
+		netBpsRx.WithLabelValues(hostname, i).Set(f.Get("rx_bytes").Float())
+		netBpsTx.WithLabelValues(hostname, i).Set(f.Get("tx_bytes").Float())
+		netPktRx.WithLabelValues(hostname, i).Set(f.Get("rx_packets").Float())
+		netPktTx.WithLabelValues(hostname, i).Set(f.Get("tx_packets").Float())
+	}
+}
+
 // cpuLogical iterates over the content of the njmon.cpu_logical data, writing
 // a set of metrics for each logical CPU.
 func cpuLogical(hostname string, result gjson.Result) {
@@ -147,4 +159,6 @@ func handleConnection(conn net.Conn) {
 	cpuLogical(hostname, jp.Get("cpu_logical"))
 	// filesystems
 	filesystems(hostname, jp.Get("filesystems"))
+	// network_adapters
+	netAdapters(hostname, jp.Get("network_adapters"))
 }
