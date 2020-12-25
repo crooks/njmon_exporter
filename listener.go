@@ -58,11 +58,14 @@ func filesystems(hostname string, result gjson.Result) {
 // produces a set of metrics for each interface.
 func netAdapters(hostname string, result gjson.Result) {
 	for i, f := range result.Map() {
-		// Required labels for filesystems
+		// Undecided whether to use Bits or Bytes for network interfaces.
+		// Bytes will do for now.
 		netBpsRx.WithLabelValues(hostname, i).Set(f.Get("rx_bytes").Float())
 		netBpsTx.WithLabelValues(hostname, i).Set(f.Get("tx_bytes").Float())
 		netPktRx.WithLabelValues(hostname, i).Set(f.Get("rx_packets").Float())
+		netPktRxDrp.WithLabelValues(hostname, i).Set(f.Get("rx_packets_dropped").Float())
 		netPktTx.WithLabelValues(hostname, i).Set(f.Get("tx_packets").Float())
+		netPktTxDrp.WithLabelValues(hostname, i).Set(f.Get("tx_packets_dropped").Float())
 	}
 }
 
