@@ -63,8 +63,10 @@ func netAdapters(hostname string, result gjson.Result) {
 		netBpsRx.WithLabelValues(hostname, i).Set(f.Get("rx_bytes").Float())
 		netBpsTx.WithLabelValues(hostname, i).Set(f.Get("tx_bytes").Float())
 		netPktRx.WithLabelValues(hostname, i).Set(f.Get("rx_packets").Float())
-		netPktRxDrp.WithLabelValues(hostname, i).Set(f.Get("rx_packets_dropped").Float())
 		netPktTx.WithLabelValues(hostname, i).Set(f.Get("tx_packets").Float())
+		// These are counter type values; only ever increasing.  They're
+		// represented as Gauges as they don't increase in known, linear increments.
+		netPktRxDrp.WithLabelValues(hostname, i).Set(f.Get("rx_packets_dropped").Float())
 		netPktTxDrp.WithLabelValues(hostname, i).Set(f.Get("tx_packets_dropped").Float())
 	}
 }
