@@ -24,6 +24,7 @@ type Config struct {
 }
 
 var (
+	cfg            *Config
 	flagConfigFile string // Fully-qualified path to config file
 )
 
@@ -53,9 +54,6 @@ func parseFlags() {
 	flag.Parse()
 	return
 }
-
-// Create a global configuration
-var cfg *Config
 
 func main() {
 	var err error

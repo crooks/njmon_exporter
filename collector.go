@@ -225,7 +225,7 @@ var (
 	netPktRxDrp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_rx_drop",
-			Help: "Network dropped packet receive rate",
+			Help: "Network total RX packets dropped",
 		},
 		[]string{"instance", "interface"},
 	)
@@ -239,7 +239,7 @@ var (
 	netPktTxDrp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_tx_drop",
-			Help: "Network dropper packet transmit rate",
+			Help: "Network total TX packets dropped",
 		},
 		[]string{"instance", "interface"},
 	)
