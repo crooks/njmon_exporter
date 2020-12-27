@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 	"time"
 
 	"github.com/tidwall/gjson"
@@ -113,8 +112,8 @@ func clockDiff(timestamp string) float64 {
 // handleConnection processes each incoming TCP connection and translates the
 // received json into Prometheus metrics.
 func handleConnection(conn net.Conn, hosts lastSeen) {
-	remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
-	log.Printf("Processing connection from: %s", remote)
+	//remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
+	//log.Printf("Processing connection from: %s", remote)
 	// Make a buffer to hold incoming data.
 	reader := bufio.NewReader(conn)
 	buf, err := reader.ReadBytes('\x0a')

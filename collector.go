@@ -291,6 +291,7 @@ func init() {
 	prometheus.MustRegister(cpuLogWait)
 	prometheus.MustRegister(filesystemSize)
 	prometheus.MustRegister(filesystemFree)
+	prometheus.MustRegister(hostUp)
 	prometheus.MustRegister(memMax)
 	prometheus.MustRegister(memOnline)
 	prometheus.MustRegister(memPgspFree)
