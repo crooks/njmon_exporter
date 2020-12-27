@@ -35,6 +35,13 @@ var (
 		},
 		[]string{"instance"},
 	)
+	hostUp = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_up",
+			Help: "Returns 0 if a known host has stopped submitting metrics",
+		},
+		[]string{"instance"},
+	)
 	// CPU Details
 	cpuNumActive = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{

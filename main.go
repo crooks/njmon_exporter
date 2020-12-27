@@ -21,6 +21,7 @@ type Config struct {
 		Address string `yaml:"address"`
 		Port    string `yaml:"port"`
 	} `yaml:"exporter"`
+	AliveTimeout int `yaml:"alive_timeout"`
 }
 
 var (

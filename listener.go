@@ -26,6 +26,13 @@ func listener() {
 	}
 	// Close the listener when the application closes.
 	defer l.Close()
+	// hosts provides a means to populate a simple "up" metric to indicate if a
+	// previously seen host has stopped submitting data.
+	var hosts lastSeen
+	hosts = make(lastSeen, 0)
+	go hosts.upTest()
+
+	// An endless loop of listening for incoming njmon connections
 	log.Printf("Listening for njmon connections on %s\n", njmonListen)
 	for {
 		// Listen for an incoming connection.
@@ -35,7 +42,7 @@ func listener() {
 			continue
 		}
 		// Handle connections in a new goroutine.
-		go handleConnection(conn)
+		go handleConnection(conn, hosts)
 	}
 }
 
@@ -105,7 +112,7 @@ func clockDiff(timestamp string) float64 {
 
 // handleConnection processes each incoming TCP connection and translates the
 // received json into Prometheus metrics.
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, hosts lastSeen) {
 	remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
 	log.Printf("Processing connection from: %s", remote)
 	// Make a buffer to hold incoming data.
@@ -126,6 +133,7 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 	hostname := jvalue.String()
+	hosts.registerHost(hostname)
 	clockDrift.WithLabelValues(hostname).Set(clockDiff(jp.Get("timestamp.UTC").String()))
 	// Uptime has only minute level granularity but we convert it to seconds for metric consistency.
 	uptimeDays := jp.Get("uptime.days").Float()

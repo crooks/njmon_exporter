@@ -6,3 +6,5 @@ njmon:
 exporter:
   address: 127.0.0.1
   port: 9772
+# After how many seconds should a host be considered dead
+alive_timeout: 600
