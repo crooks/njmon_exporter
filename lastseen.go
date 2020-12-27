@@ -31,7 +31,7 @@ func (ls lastSeen) upTest() {
 func (ls lastSeen) registerHost(hostname string) {
 	if _, seen := ls[hostname]; !seen {
 		// This host hasn't been seen before.
-		log.Printf("%s: New host discovered", hostname)
+		log.Printf("New host discovered: %s", hostname)
 	}
 	ls[hostname] = time.Now().UTC()
 }
