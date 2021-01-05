@@ -163,10 +163,10 @@ func handleConnection(conn net.Conn, hosts lastSeen) {
 	cpuNumConf.WithLabelValues(hostname).Set(jp.Get("cpu_details.cpus_configured").Float())
 	cpuMHz.WithLabelValues(hostname).Set(jp.Get("cpu_details.mhz").Float())
 	// cpu_util
-	cpuTotIdle.WithLabelValues(hostname).Set(jp.Get("cpu_util.idle_pct").Float())
-	cpuTotKern.WithLabelValues(hostname).Set(jp.Get("cpu_util.kern_pct").Float())
-	cpuTotUser.WithLabelValues(hostname).Set(jp.Get("cpu_util.user_pct").Float())
-	cpuTotWait.WithLabelValues(hostname).Set(jp.Get("cpu_util.wait_pct").Float())
+	cpuTotIdle.WithLabelValues(hostname).Set(jp.Get("cpu_util.idle_pct").Float() / 100)
+	cpuTotKern.WithLabelValues(hostname).Set(jp.Get("cpu_util.kern_pct").Float() / 100)
+	cpuTotUser.WithLabelValues(hostname).Set(jp.Get("cpu_util.user_pct").Float() / 100)
+	cpuTotWait.WithLabelValues(hostname).Set(jp.Get("cpu_util.wait_pct").Float() / 100)
 	// cpu_logical
 	cpuLogical(hostname, jp.Get("cpu_logical"))
 	// filesystems
