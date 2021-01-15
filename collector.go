@@ -128,14 +128,14 @@ var (
 			Name: "njmon_filesystem_size",
 			Help: "Size of the filesystem in Bytes",
 		},
-		[]string{"instance", "device", "mount"},
+		[]string{"instance", "device", "mountpoint"},
 	)
 	filesystemFree = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_filesystem_free",
 			Help: "Available filesystem space in Bytes",
 		},
-		[]string{"instance", "device", "mount"},
+		[]string{"instance", "device", "mountpoint"},
 	)
 	// Memory
 	memOnline = prometheus.NewGaugeVec(
