@@ -253,14 +253,14 @@ var (
 	netBpsRx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_bps_rx",
-			Help: "Network bit/s receive rate",
+			Help: "Network bytes/s receive rate",
 		},
 		[]string{"instance", "interface"},
 	)
 	netBpsTx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_bps_tx",
-			Help: "Network bit/s transmit rate",
+			Help: "Network bytes/s transmit rate",
 		},
 		[]string{"instance", "interface"},
 	)
