@@ -37,7 +37,7 @@ var (
 	)
 	hostUp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "njmon_up",
+			Name: "up",
 			Help: "Returns 0 if a known host has stopped submitting metrics",
 		},
 		[]string{"instance"},
