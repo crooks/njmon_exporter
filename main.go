@@ -55,7 +55,6 @@ func parseFlags() {
 		"Path to njmon_exporter configuration file",
 	)
 	flag.Parse()
-	return
 }
 
 func main() {

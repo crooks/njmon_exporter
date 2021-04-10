@@ -122,6 +122,50 @@ var (
 		},
 		[]string{"instance", "cpu"},
 	)
+	// CPU Physical
+	cpuPhysMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_physical_max",
+			Help: "Number of physical CPUs installed",
+		},
+		[]string{"instance"},
+	)
+	cpuPhysOnline = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_physical_online",
+			Help: "Number of physical CPUs online",
+		},
+		[]string{"instance"},
+	)
+	// CPU Virtual
+	cpuVirtMin = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_virtual_min",
+			Help: "Minimum number of virtual CPUs in the LPAR",
+		},
+		[]string{"instance"},
+	)
+	cpuVirtMax = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_virtual_max",
+			Help: "Maximum number of virtual CPUs in the LPAR",
+		},
+		[]string{"instance"},
+	)
+	cpuVirtDesired = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_virtual_desired",
+			Help: "Desired number of virtual CPUs in the LPAR",
+		},
+		[]string{"instance"},
+	)
+	cpuVirtOnline = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_cpu_virtual_online",
+			Help: "Online number of virtual CPUs in the LPAR",
+		},
+		[]string{"instance"},
+	)
 	// Filesystems
 	filesystemSize = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -138,10 +182,10 @@ var (
 		[]string{"instance", "device", "mountpoint"},
 	)
 	// Memory
-	memOnline = prometheus.NewGaugeVec(
+	memDesired = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "njmon_mem_online",
-			Help: "Memory allocated to the system in Bytes",
+			Name: "njmon_mem_desired",
+			Help: "Desired memory allocated in Bytes",
 		},
 		[]string{"instance"},
 	)
@@ -149,6 +193,20 @@ var (
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_max",
 			Help: "Memory maximum that can be allocated in Bytes",
+		},
+		[]string{"instance"},
+	)
+	memMin = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_min",
+			Help: "Minimum maximum that can be allocated in Bytes",
+		},
+		[]string{"instance"},
+	)
+	memOnline = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_online",
+			Help: "Memory allocated to the system in Bytes",
 		},
 		[]string{"instance"},
 	)

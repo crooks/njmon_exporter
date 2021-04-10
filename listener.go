@@ -15,7 +15,7 @@ const (
 	page = float64(4096)
 )
 
-// listener listens for connections from njmon.  It forks handleConnectinon() for each connection.
+// listener listens for connections from njmon.  It forks handleConnection() for each connection.
 func listener() {
 	njmonListen := fmt.Sprintf("%s:%s", cfg.NJmon.Address, cfg.NJmon.Port)
 	// Listen for incoming connections.
@@ -27,8 +27,7 @@ func listener() {
 	defer l.Close()
 	// hosts provides a means to populate a simple "up" metric to indicate if a
 	// previously seen host has stopped submitting data.
-	var hosts lastSeen
-	hosts = make(lastSeen, 0)
+	hosts := make(lastSeen)
 	go hosts.upTest()
 
 	// An endless loop of listening for incoming njmon connections
@@ -145,8 +144,16 @@ func handleConnection(conn net.Conn, hosts lastSeen) {
 	aixTechLevel.WithLabelValues(hostname).Set(jp.Get("server.aix_technology_level").Float())
 	aixServicePack.WithLabelValues(hostname).Set(jp.Get("server.aix_service_pack").Float())
 	// config
-	memOnline.WithLabelValues(hostname).Set(jp.Get("config.mem_online").Float() * mb)
+	memDesired.WithLabelValues(hostname).Set(jp.Get("config.mem_desired").Float() * mb)
 	memMax.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
+	memMin.WithLabelValues(hostname).Set(jp.Get("config.mem_min").Float() * mb)
+	memOnline.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
+	cpuPhysMax.WithLabelValues(hostname).Set(jp.Get("config.pcpu_max").Float())
+	cpuPhysOnline.WithLabelValues(hostname).Set(jp.Get("config.pcpu_online").Float())
+	cpuVirtDesired.WithLabelValues(hostname).Set(jp.Get("config.vcpus_desired").Float())
+	cpuVirtMax.WithLabelValues(hostname).Set(jp.Get("config.vcpus_max").Float())
+	cpuVirtMin.WithLabelValues(hostname).Set(jp.Get("config.vcpus_min").Float())
+	cpuVirtOnline.WithLabelValues(hostname).Set(jp.Get("config.vcpus_online").Float())
 	// memory
 	memPgspFree.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_free").Float() * page)
 	memPgspRsvd.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_rsvd").Float() * page)
