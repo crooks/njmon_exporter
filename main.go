@@ -45,6 +45,8 @@ func newConfig(filename string) (*Config, error) {
 	return config, nil
 }
 
+// parseFlags processes arguments passed on the command line in the format
+// standard format: --foo=bar
 func parseFlags() {
 	flag.StringVar(
 		&flagConfigFile,
