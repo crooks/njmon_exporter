@@ -4,6 +4,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+var defaultLabels = []string{"instance"}
+
 var (
 	// AIX section
 	aixVersion = prometheus.NewGaugeVec(
@@ -11,21 +13,21 @@ var (
 			Name: "njmon_aix_version",
 			Help: "AIX version number",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	aixTechLevel = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_aix_techlevel",
 			Help: "AIX technology level",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	aixServicePack = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_aix_servicepack",
 			Help: "AIX service pack number",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// Timestamp
 	clockDrift = prometheus.NewGaugeVec(
@@ -33,14 +35,14 @@ var (
 			Name: "njmon_clock_drift",
 			Help: "Difference between remote UTC and local UTC in seconds",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	hostUp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "up",
 			Help: "Returns 0 if a known host has stopped submitting metrics",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// CPU Details
 	cpuNumActive = prometheus.NewGaugeVec(
@@ -48,21 +50,21 @@ var (
 			Name: "njmon_cpu_details_active",
 			Help: "Number of active CPUs",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuNumConf = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_details_configured",
 			Help: "Number of configured CPUs",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuMHz = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_details_mhz",
 			Help: "CPU speed in MHz",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// CPU Utilization
 	cpuTotIdle = prometheus.NewGaugeVec(
@@ -70,28 +72,28 @@ var (
 			Name: "njmon_cpu_total_idle",
 			Help: "Percentage of CPU cycles spent idle",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuTotKern = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_total_kern",
 			Help: "Percentage of CPU cycles spent on kernel",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuTotUser = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_total_user",
 			Help: "Percentage of CPU cycles spent on user",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuTotWait = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_total_wait",
 			Help: "Percentage of CPU cycles spent waiting",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// CPU Logical
 	cpuLogIdle = prometheus.NewGaugeVec(
@@ -99,28 +101,28 @@ var (
 			Name: "njmon_cpu_logical_idle",
 			Help: "Percentage of logical CPU cycles spent idle",
 		},
-		[]string{"instance", "cpu"},
+		append(defaultLabels, "cpu"),
 	)
 	cpuLogSys = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_logical_sys",
 			Help: "Percentage of logical CPU cycles spent on sys",
 		},
-		[]string{"instance", "cpu"},
+		append(defaultLabels, "cpu"),
 	)
 	cpuLogUser = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_logical_user",
 			Help: "Percentage of logical CPU cycles spent on user",
 		},
-		[]string{"instance", "cpu"},
+		append(defaultLabels, "cpu"),
 	)
 	cpuLogWait = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_logical_wait",
 			Help: "Percentage of logical CPU cycles spent waiting",
 		},
-		[]string{"instance", "cpu"},
+		append(defaultLabels, "cpu"),
 	)
 	// CPU Physical
 	cpuPhysMax = prometheus.NewGaugeVec(
@@ -128,14 +130,14 @@ var (
 			Name: "njmon_cpu_physical_max",
 			Help: "Number of physical CPUs installed",
 		},
-		[]string{"instance"},
+		append(defaultLabels, "cpu"),
 	)
 	cpuPhysOnline = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_physical_online",
 			Help: "Number of physical CPUs online",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// CPU Virtual
 	cpuVirtMin = prometheus.NewGaugeVec(
@@ -143,28 +145,28 @@ var (
 			Name: "njmon_cpu_virtual_min",
 			Help: "Minimum number of virtual CPUs in the LPAR",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuVirtMax = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_virtual_max",
 			Help: "Maximum number of virtual CPUs in the LPAR",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuVirtDesired = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_virtual_desired",
 			Help: "Desired number of virtual CPUs in the LPAR",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	cpuVirtOnline = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_cpu_virtual_online",
 			Help: "Online number of virtual CPUs in the LPAR",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	// Filesystems
 	filesystemSize = prometheus.NewGaugeVec(
@@ -172,14 +174,14 @@ var (
 			Name: "njmon_filesystem_size",
 			Help: "Size of the filesystem in Bytes",
 		},
-		[]string{"instance", "device", "mountpoint"},
+		append(defaultLabels, "device", "mountpoint"),
 	)
 	filesystemFree = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_filesystem_free",
 			Help: "Available filesystem space in Bytes",
 		},
-		[]string{"instance", "device", "mountpoint"},
+		append(defaultLabels, "device", "mountpoint"),
 	)
 	// Memory
 	memDesired = prometheus.NewGaugeVec(
@@ -187,147 +189,147 @@ var (
 			Name: "njmon_mem_desired",
 			Help: "Desired memory allocated in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memMax = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_max",
 			Help: "Memory maximum that can be allocated in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memMin = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_min",
 			Help: "Minimum maximum that can be allocated in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memOnline = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_online",
 			Help: "Memory allocated to the system in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memPgspFree = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_pgsp_free",
 			Help: "Memory pagespace free in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memPgspRsvd = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_pgsp_rsvd",
 			Help: "Memory pagespace reserved in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memPgspTotal = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_pgsp_total",
 			Help: "Memory pagespace total in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealFree = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_free",
 			Help: "Memory real free in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealInUse = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_inuse",
 			Help: "Memory real in-use in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealPinned = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_pinned",
 			Help: "Memory real pinned in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealProcess = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_process",
 			Help: "Memory real total in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealSystem = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_system",
 			Help: "Memory real total in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealTotal = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_total",
 			Help: "Memory real total in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	memRealUser = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_user",
 			Help: "Memory real total in Bytes",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 	netPktRx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_rx_total",
 			Help: "Network packet receive rate",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	netPktRxDrp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_rx_drop",
 			Help: "Network total RX packets dropped",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	netPktTx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_tx_total",
 			Help: "Network packet transmit rate",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	netPktTxDrp = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_tx_drop",
 			Help: "Network total TX packets dropped",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	netBpsRx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_bps_rx",
 			Help: "Network bytes/s receive rate",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	netBpsTx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_bps_tx",
 			Help: "Network bytes/s transmit rate",
 		},
-		[]string{"instance", "interface"},
+		append(defaultLabels, "interface"),
 	)
 	systemUptime = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_system_uptime",
 			Help: "System uptime in seconds",
 		},
-		[]string{"instance"},
+		defaultLabels,
 	)
 )
 
