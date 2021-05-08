@@ -8,3 +8,9 @@ exporter:
   port: 9772
 # After how many seconds should a host be considered dead
 alive_timeout: 300
+instance_label:
+  label_name: env
+  label_match: prod
+  label_miss: dev
+  match_instances:
+    - myprodhostname
