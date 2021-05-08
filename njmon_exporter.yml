@@ -10,7 +10,7 @@ exporter:
 alive_timeout: 300
 instance_label:
   label_name: env
-  label_match: prod
+  label_hit: prod
   label_miss: dev
-  match_instances:
+  hit_instances:
     - myprodhostname
