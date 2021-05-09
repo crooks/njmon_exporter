@@ -1,12 +1,64 @@
 package main
 
 import (
+	"log"
+	"strings"
+
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var defaultLabels = []string{"instance"}
-
 var (
+	aixServicePack *prometheus.GaugeVec
+	aixTechLevel   *prometheus.GaugeVec
+	aixVersion     *prometheus.GaugeVec
+	clockDrift     *prometheus.GaugeVec
+	cpuLogIdle     *prometheus.GaugeVec
+	cpuLogSys      *prometheus.GaugeVec
+	cpuLogUser     *prometheus.GaugeVec
+	cpuLogWait     *prometheus.GaugeVec
+	cpuMHz         *prometheus.GaugeVec
+	cpuNumActive   *prometheus.GaugeVec
+	cpuNumConf     *prometheus.GaugeVec
+	cpuPhysMax     *prometheus.GaugeVec
+	cpuPhysOnline  *prometheus.GaugeVec
+	cpuTotIdle     *prometheus.GaugeVec
+	cpuTotKern     *prometheus.GaugeVec
+	cpuTotUser     *prometheus.GaugeVec
+	cpuTotWait     *prometheus.GaugeVec
+	cpuVirtDesired *prometheus.GaugeVec
+	cpuVirtMax     *prometheus.GaugeVec
+	cpuVirtMin     *prometheus.GaugeVec
+	cpuVirtOnline  *prometheus.GaugeVec
+	filesystemFree *prometheus.GaugeVec
+	filesystemSize *prometheus.GaugeVec
+	hostUp         *prometheus.GaugeVec
+	memDesired     *prometheus.GaugeVec
+	memMax         *prometheus.GaugeVec
+	memMin         *prometheus.GaugeVec
+	memOnline      *prometheus.GaugeVec
+	memPgspFree    *prometheus.GaugeVec
+	memPgspRsvd    *prometheus.GaugeVec
+	memPgspTotal   *prometheus.GaugeVec
+	memRealFree    *prometheus.GaugeVec
+	memRealInUse   *prometheus.GaugeVec
+	memRealPinned  *prometheus.GaugeVec
+	memRealProcess *prometheus.GaugeVec
+	memRealSystem  *prometheus.GaugeVec
+	memRealTotal   *prometheus.GaugeVec
+	memRealUser    *prometheus.GaugeVec
+	netBpsRx       *prometheus.GaugeVec
+	netBpsTx       *prometheus.GaugeVec
+	netPktRxDrp    *prometheus.GaugeVec
+	netPktRx       *prometheus.GaugeVec
+	netPktTxDrp    *prometheus.GaugeVec
+	netPktTx       *prometheus.GaugeVec
+	systemUptime   *prometheus.GaugeVec
+)
+
+func initCollectors() {
+	defaultLabels := []string{"instance", cfg.InstanceLabel.Name}
+	log.Printf("Default labels: %v", strings.Join(defaultLabels, ","))
+
 	// AIX section
 	aixVersion = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -15,6 +67,7 @@ var (
 		},
 		defaultLabels,
 	)
+
 	aixTechLevel = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_aix_techlevel",
@@ -130,7 +183,7 @@ var (
 			Name: "njmon_cpu_physical_max",
 			Help: "Number of physical CPUs installed",
 		},
-		append(defaultLabels, "cpu"),
+		defaultLabels,
 	)
 	cpuPhysOnline = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -331,9 +384,7 @@ var (
 		},
 		defaultLabels,
 	)
-)
 
-func init() {
 	prometheus.MustRegister(aixVersion)
 	prometheus.MustRegister(aixTechLevel)
 	prometheus.MustRegister(aixServicePack)

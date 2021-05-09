@@ -21,6 +21,12 @@ type Config struct {
 		Address string `yaml:"address"`
 		Port    string `yaml:"port"`
 	} `yaml:"exporter"`
+	InstanceLabel struct {
+		Name      string   `yaml:"label_name"`
+		Hit       string   `yaml:"label_hit"`
+		Miss      string   `yaml:"label_miss"`
+		Instances []string `yaml:"hit_instances"`
+	} `yaml:"instance_label"`
 	AliveTimeout int `yaml:"alive_timeout"`
 }
 
@@ -64,6 +70,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to parse config file: %v", err)
 	}
+	initCollectors()
 	go listener()
 	http.Handle("/metrics", promhttp.Handler())
 	exporter := fmt.Sprintf("%s:%s", cfg.Exporter.Address, cfg.Exporter.Port)

@@ -27,7 +27,7 @@ func listener() {
 	defer l.Close()
 	// hosts provides a means to populate a simple "up" metric to indicate if a
 	// previously seen host has stopped submitting data.
-	hosts := make(lastSeen)
+	hosts := make(hostInfoMap)
 	go hosts.upTest()
 
 	// An endless loop of listening for incoming njmon connections
@@ -46,7 +46,7 @@ func listener() {
 
 // filesystems iterates over the content of the njmon filesystems data and
 // produces a set of metrics for each filesystem.
-func filesystems(hostname string, result gjson.Result) {
+func filesystems(hostname, instanceLabel string, result gjson.Result) {
 	for _, f := range result.Map() {
 		// Required labels for filesystems
 		device := f.Get("device").String()
@@ -54,37 +54,37 @@ func filesystems(hostname string, result gjson.Result) {
 		// Filesystem metrics
 		size := f.Get("size_mb").Float() * mb
 		free := f.Get("free_mb").Float() * mb
-		filesystemSize.WithLabelValues(hostname, device, mount).Set(size)
-		filesystemFree.WithLabelValues(hostname, device, mount).Set(free)
+		filesystemSize.WithLabelValues(hostname, instanceLabel, device, mount).Set(size)
+		filesystemFree.WithLabelValues(hostname, instanceLabel, device, mount).Set(free)
 	}
 }
 
 // netAdapters iterates over the content of the njmon network_adapters data and
 // produces a set of metrics for each interface.
-func netAdapters(hostname string, result gjson.Result) {
+func netAdapters(hostname, instanceLabel string, result gjson.Result) {
 	for i, f := range result.Map() {
 		// Undecided whether to use Bits or Bytes for network interfaces.
 		// Bytes will do for now.
-		netBpsRx.WithLabelValues(hostname, i).Set(f.Get("rx_bytes").Float())
-		netBpsTx.WithLabelValues(hostname, i).Set(f.Get("tx_bytes").Float())
-		netPktRx.WithLabelValues(hostname, i).Set(f.Get("rx_packets").Float())
-		netPktTx.WithLabelValues(hostname, i).Set(f.Get("tx_packets").Float())
+		netBpsRx.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("rx_bytes").Float())
+		netBpsTx.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("tx_bytes").Float())
+		netPktRx.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("rx_packets").Float())
+		netPktTx.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("tx_packets").Float())
 		// These are counter type values; only ever increasing.  They're
 		// represented as Gauges as they don't increase in known, linear increments.
-		netPktRxDrp.WithLabelValues(hostname, i).Set(f.Get("rx_packets_dropped").Float())
-		netPktTxDrp.WithLabelValues(hostname, i).Set(f.Get("tx_packets_dropped").Float())
+		netPktRxDrp.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("rx_packets_dropped").Float())
+		netPktTxDrp.WithLabelValues(hostname, instanceLabel, i).Set(f.Get("tx_packets_dropped").Float())
 	}
 }
 
 // cpuLogical iterates over the content of the njmon.cpu_logical data, writing
 // a set of metrics for each logical CPU.
-func cpuLogical(hostname string, result gjson.Result) {
+func cpuLogical(hostname, instanceLabel string, result gjson.Result) {
 	for cpuNum, f := range result.Map() {
 		// Divide these by 100 to express percentages as 0-1.
-		cpuLogIdle.WithLabelValues(hostname, cpuNum).Set(f.Get("idle").Float() / 100)
-		cpuLogSys.WithLabelValues(hostname, cpuNum).Set(f.Get("sys").Float() / 100)
-		cpuLogUser.WithLabelValues(hostname, cpuNum).Set(f.Get("user").Float() / 100)
-		cpuLogWait.WithLabelValues(hostname, cpuNum).Set(f.Get("wait").Float() / 100)
+		cpuLogIdle.WithLabelValues(hostname, instanceLabel, cpuNum).Set(f.Get("idle").Float() / 100)
+		cpuLogSys.WithLabelValues(hostname, instanceLabel, cpuNum).Set(f.Get("sys").Float() / 100)
+		cpuLogUser.WithLabelValues(hostname, instanceLabel, cpuNum).Set(f.Get("user").Float() / 100)
+		cpuLogWait.WithLabelValues(hostname, instanceLabel, cpuNum).Set(f.Get("wait").Float() / 100)
 	}
 }
 
@@ -110,7 +110,7 @@ func clockDiff(timestamp string) float64 {
 
 // handleConnection processes each incoming TCP connection and translates the
 // received json into Prometheus metrics.
-func handleConnection(conn net.Conn, hosts lastSeen) {
+func handleConnection(conn net.Conn, hosts hostInfoMap) {
 	//remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
 	//log.Printf("Processing connection from: %s", remote)
 	// Make a buffer to hold incoming data.
@@ -131,53 +131,54 @@ func handleConnection(conn net.Conn, hosts lastSeen) {
 		return
 	}
 	hostname := jvalue.String()
-	hosts.registerHost(hostname)
-	clockDrift.WithLabelValues(hostname).Set(clockDiff(jp.Get("timestamp.UTC").String()))
+	instanceLabel := hosts.registerHost(hostname)
+
+	clockDrift.WithLabelValues(hostname, instanceLabel).Set(clockDiff(jp.Get("timestamp.UTC").String()))
 	// Uptime has only minute level granularity but we convert it to seconds for metric consistency.
 	uptimeDays := jp.Get("uptime.days").Float()
 	uptimeHours := jp.Get("uptime.hours").Float()
 	uptimeMins := jp.Get("uptime.minutes").Float()
 	uptimeSecs := (uptimeDays * 24 * 60 * 60) + (uptimeHours * 60 * 60) + (uptimeMins * 60)
-	systemUptime.WithLabelValues(hostname).Set(uptimeSecs)
+	systemUptime.WithLabelValues(hostname, instanceLabel).Set(uptimeSecs)
 	// server
-	aixVersion.WithLabelValues(hostname).Set(jp.Get("server.aix_version").Float())
-	aixTechLevel.WithLabelValues(hostname).Set(jp.Get("server.aix_technology_level").Float())
-	aixServicePack.WithLabelValues(hostname).Set(jp.Get("server.aix_service_pack").Float())
+	aixVersion.WithLabelValues(hostname, instanceLabel).Set(jp.Get("server.aix_version").Float())
+	aixTechLevel.WithLabelValues(hostname, instanceLabel).Set(jp.Get("server.aix_technology_level").Float())
+	aixServicePack.WithLabelValues(hostname, instanceLabel).Set(jp.Get("server.aix_service_pack").Float())
 	// config
-	memDesired.WithLabelValues(hostname).Set(jp.Get("config.mem_desired").Float() * mb)
-	memMax.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
-	memMin.WithLabelValues(hostname).Set(jp.Get("config.mem_min").Float() * mb)
-	memOnline.WithLabelValues(hostname).Set(jp.Get("config.mem_max").Float() * mb)
-	cpuPhysMax.WithLabelValues(hostname).Set(jp.Get("config.pcpu_max").Float())
-	cpuPhysOnline.WithLabelValues(hostname).Set(jp.Get("config.pcpu_online").Float())
-	cpuVirtDesired.WithLabelValues(hostname).Set(jp.Get("config.vcpus_desired").Float())
-	cpuVirtMax.WithLabelValues(hostname).Set(jp.Get("config.vcpus_max").Float())
-	cpuVirtMin.WithLabelValues(hostname).Set(jp.Get("config.vcpus_min").Float())
-	cpuVirtOnline.WithLabelValues(hostname).Set(jp.Get("config.vcpus_online").Float())
+	memDesired.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_desired").Float() * mb)
+	memMax.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_max").Float() * mb)
+	memMin.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_min").Float() * mb)
+	memOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_max").Float() * mb)
+	cpuPhysMax.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.pcpu_max").Float())
+	cpuPhysOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.pcpu_online").Float())
+	cpuVirtDesired.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.vcpus_desired").Float())
+	cpuVirtMax.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.vcpus_max").Float())
+	cpuVirtMin.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.vcpus_min").Float())
+	cpuVirtOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.vcpus_online").Float())
 	// memory
-	memPgspFree.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_free").Float() * page)
-	memPgspRsvd.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_rsvd").Float() * page)
-	memPgspTotal.WithLabelValues(hostname).Set(jp.Get("memory.pgsp_total").Float() * page)
-	memRealFree.WithLabelValues(hostname).Set(jp.Get("memory.real_free").Float() * page)
-	memRealInUse.WithLabelValues(hostname).Set(jp.Get("memory.real_inuse").Float() * page)
-	memRealPinned.WithLabelValues(hostname).Set(jp.Get("memory.real_pinned").Float() * page)
-	memRealProcess.WithLabelValues(hostname).Set(jp.Get("memory.real_process").Float() * page)
-	memRealSystem.WithLabelValues(hostname).Set(jp.Get("memory.real_system").Float() * page)
-	memRealTotal.WithLabelValues(hostname).Set(jp.Get("memory.real_total").Float() * page)
-	memRealUser.WithLabelValues(hostname).Set(jp.Get("memory.real_user").Float() * page)
+	memPgspFree.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.pgsp_free").Float() * page)
+	memPgspRsvd.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.pgsp_rsvd").Float() * page)
+	memPgspTotal.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.pgsp_total").Float() * page)
+	memRealFree.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_free").Float() * page)
+	memRealInUse.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_inuse").Float() * page)
+	memRealPinned.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_pinned").Float() * page)
+	memRealProcess.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_process").Float() * page)
+	memRealSystem.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_system").Float() * page)
+	memRealTotal.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_total").Float() * page)
+	memRealUser.WithLabelValues(hostname, instanceLabel).Set(jp.Get("memory.real_user").Float() * page)
 	// cpu_details
-	cpuNumActive.WithLabelValues(hostname).Set(jp.Get("cpu_details.cpus_active").Float())
-	cpuNumConf.WithLabelValues(hostname).Set(jp.Get("cpu_details.cpus_configured").Float())
-	cpuMHz.WithLabelValues(hostname).Set(jp.Get("cpu_details.mhz").Float())
+	cpuNumActive.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_details.cpus_active").Float())
+	cpuNumConf.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_details.cpus_configured").Float())
+	cpuMHz.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_details.mhz").Float())
 	// cpu_util
-	cpuTotIdle.WithLabelValues(hostname).Set(jp.Get("cpu_util.idle_pct").Float() / 100)
-	cpuTotKern.WithLabelValues(hostname).Set(jp.Get("cpu_util.kern_pct").Float() / 100)
-	cpuTotUser.WithLabelValues(hostname).Set(jp.Get("cpu_util.user_pct").Float() / 100)
-	cpuTotWait.WithLabelValues(hostname).Set(jp.Get("cpu_util.wait_pct").Float() / 100)
+	cpuTotIdle.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.idle_pct").Float() / 100)
+	cpuTotKern.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.kern_pct").Float() / 100)
+	cpuTotUser.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.user_pct").Float() / 100)
+	cpuTotWait.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.wait_pct").Float() / 100)
 	// cpu_logical
-	cpuLogical(hostname, jp.Get("cpu_logical"))
+	cpuLogical(hostname, instanceLabel, jp.Get("cpu_logical"))
 	// filesystems
-	filesystems(hostname, jp.Get("filesystems"))
+	filesystems(hostname, instanceLabel, jp.Get("filesystems"))
 	// network_adapters
-	netAdapters(hostname, jp.Get("network_adapters"))
+	netAdapters(hostname, instanceLabel, jp.Get("network_adapters"))
 }
