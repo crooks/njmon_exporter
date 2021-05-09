@@ -30,6 +30,8 @@ func strContains(l []string, s string) bool {
 // populating an "up" metric.  The metric returns 1 if a host has been seen
 // within an acceptable period of time or 0 if it hasn't.
 func (h hostInfoMap) upTest() {
+	// If the AliveTimeout is too short, it will mark hosts dead in between
+	// njmon checkins.  Even 60 seconds is a bit bonkers.
 	if cfg.AliveTimeout < 60 {
 		cfg.AliveTimeout = 60
 		log.Printf("Setting a sane Alive Timeout of %d seconds", cfg.AliveTimeout)
@@ -37,7 +39,6 @@ func (h hostInfoMap) upTest() {
 	timeout := time.Second * time.Duration(cfg.AliveTimeout)
 	log.Printf("Host considered dead if not seen for %d seconds", int(timeout.Seconds()))
 	// Wait a little while on startup to give hosts a chance to check in.
-	time.Sleep(120 * time.Second)
 	for {
 		now := time.Now().UTC()
 		for hostname, t := range h {
@@ -46,7 +47,6 @@ func (h hostInfoMap) upTest() {
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(0))
 			} else {
 				// Host is up
-				log.Printf("Labelling %s as %s", hostname, t.labelVal)
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(1))
 			}
 		} // End of hosts loop
@@ -60,17 +60,17 @@ func (h hostInfoMap) upTest() {
 func (h hostInfoMap) registerHost(hostname string) string {
 	var n *hostInfo
 	if _, seen := h[hostname]; !seen {
-		log.Printf("New host discovered: %s", hostname)
 		n = new(hostInfo)
 		if strContains(cfg.InstanceLabel.Instances, hostname) {
 			n.labelVal = cfg.InstanceLabel.Hit
 		} else {
 			n.labelVal = cfg.InstanceLabel.Miss
 		}
+		log.Printf("New host discovered: hostname=%s, %s=%s", hostname, cfg.InstanceLabel.Name, n.labelVal)
 	} else {
 		n = h[hostname]
 	}
-	h[hostname] = n
 	n.lastSeen = time.Now().UTC()
+	h[hostname] = n
 	return n.labelVal
 }
