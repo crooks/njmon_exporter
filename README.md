@@ -11,6 +11,7 @@ Prometheus exporter for IBM AIX systems running [njmon](http://nmon.sourceforge.
 - [x] Logging
 - [ ] Config validation support
 - [ ] Provide decent unit test coverage
+- [x] Add a method for appending labels to selected source hosts (E.g. Dev vs. Prod)
 - [ ] Declare it ready for use
 
 ## Overview
