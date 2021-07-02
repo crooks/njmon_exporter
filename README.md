@@ -44,3 +44,15 @@ njmon_exporter provides an interface between Prometheus and the AIX njmon tool (
 * Insert a line like this: `4 * * * * /usr/local/bin/njmon -k -s 60 -i <exporter_host> -p 8086`.
 * Run njmon to avoid waiting for crontab to start it `/usr/local/bin/njmon -k -s 60 -i <exporter_host> -p 8086`
 * Repeat this section for each AIX host you want to monitor
+
+## Instance Labels
+### Overview
+The njmon_exporter includes a method for tagging incoming njmon sources by matching their hostname against a list defined in the `njmon_exporter.yml` config file.  The concept came about following a need to identify specific hosts as Production vs. Non-Production.
+### Configuration
+The njmon_exporter.yml file contains a section titled `instance_label`.  There are four required parameters in this section:-
+* label_name: The name of the label that will be appended to all host metrics (E.g. `environment`).
+* label_hit: The value to associate with `label_name` when a hostname match occurs (E.g. `prod`).
+* label_miss: The value to associate with `label_name` when an incoming hostname isn't matched (E.g. `dev`).
+* hit_instance: A list of incoming hostnames that will trigger `label_name`=`label_hit`.
+
+Production vs. Development is just an example.  Any label can be generated and populated based on a match (or no match) of the hit_instance list.
