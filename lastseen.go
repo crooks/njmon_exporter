@@ -8,8 +8,9 @@ import (
 // hostInfo contains the fields to be recorded against each discovered
 // hostname.
 type hostInfo struct {
-	lastSeen time.Time
-	labelVal string
+	lastSeen   time.Time
+	labelVal   string
+	alertState bool
 }
 
 // hostInfoMap declares a map of structs (hostInfo), keyed by a string
@@ -45,9 +46,19 @@ func (h hostInfoMap) upTest() {
 			if now.Sub(t.lastSeen) > timeout {
 				// Host is considered down
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(0))
+				// If the host was previously not alerting, this is a state change
+				if !t.alertState {
+					log.Printf("%s: host is now dead", hostname)
+					t.alertState = true
+				}
 			} else {
 				// Host is up
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(1))
+				// If the host was previously alerting, this is a state change
+				if t.alertState {
+					log.Printf("%s: host has transitioned to up", hostname)
+					t.alertState = false
+				}
 			}
 		} // End of hosts loop
 		time.Sleep(60 * time.Second)
