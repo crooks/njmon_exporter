@@ -148,7 +148,7 @@ func handleConnection(conn net.Conn, hosts hostInfoMap) {
 	memDesired.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_desired").Float() * mb)
 	memMax.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_max").Float() * mb)
 	memMin.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_min").Float() * mb)
-	memOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_max").Float() * mb)
+	memOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.mem_online").Float() * mb)
 	cpuPhysMax.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.pcpu_max").Float())
 	cpuPhysOnline.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.pcpu_online").Float())
 	cpuVirtDesired.WithLabelValues(hostname, instanceLabel).Set(jp.Get("config.vcpus_desired").Float())
