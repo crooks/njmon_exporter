@@ -96,7 +96,12 @@ func clockDiff(timestamp string) float64 {
 		a difference of several seconds should be tolerated.
 	*/
 	format := "2006-01-02T15:04:05"
-	t1, _ := time.Parse(format, timestamp)
+	t1, err := time.Parse(format, timestamp)
+	if err != nil {
+		log.Printf("Cannot parse timestamp: %s", timestamp)
+		// return 0 in the absense of anything more meaningful
+		return 0
+	}
 	t2 := time.Now().UTC()
 	// We always want a positive diff, regardless of which clock is ahead.
 	var diff time.Duration
