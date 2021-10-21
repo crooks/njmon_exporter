@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"sync"
 	"time"
 )
 
@@ -13,9 +14,18 @@ type hostInfo struct {
 	alertState bool
 }
 
-// hostInfoMap declares a map of structs (hostInfo), keyed by a string
-// (hostname).
-type hostInfoMap map[string]*hostInfo
+// hostInfoMap declares struct containing a map of structs (hostInfo), keyed by a string (hostname).
+// It also includes a RWMutex mu to prevent read/write race conditions on the map.
+type hostInfoMap struct {
+	hosts map[string]*hostInfo
+	mu    sync.Mutex
+}
+
+func newHostInfoMap() *hostInfoMap {
+	h := new(hostInfoMap)
+	h.hosts = make(map[string]*hostInfo)
+	return h
+}
 
 //strContains returns true if string s is a member of slice l
 func strContains(l []string, s string) bool {
@@ -30,7 +40,7 @@ func strContains(l []string, s string) bool {
 // upTest runs an endless loop, iterating over all the known hosts and
 // populating an "up" metric.  The metric returns 1 if a host has been seen
 // within an acceptable period of time or 0 if it hasn't.
-func (h hostInfoMap) upTest() {
+func (h *hostInfoMap) upTest() {
 	// If the AliveTimeout is too short, it will mark hosts dead in between
 	// njmon checkins.  Even 60 seconds is a bit bonkers.
 	if cfg.AliveTimeout < 60 {
@@ -42,7 +52,8 @@ func (h hostInfoMap) upTest() {
 	// Wait a little while on startup to give hosts a chance to check in.
 	for {
 		now := time.Now().UTC()
-		for hostname, t := range h {
+		h.mu.Lock()
+		for hostname, t := range h.hosts {
 			if now.Sub(t.lastSeen) > timeout {
 				// Host is considered down
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(0))
@@ -61,6 +72,7 @@ func (h hostInfoMap) upTest() {
 				}
 			}
 		} // End of hosts loop
+		h.mu.Unlock()
 		time.Sleep(60 * time.Second)
 	} // Endless loop
 }
@@ -68,9 +80,11 @@ func (h hostInfoMap) upTest() {
 // registerHost takes a hostname and returns a Hit/Miss label.  If the
 // hostname is known, the time it was last seen is updated to Now.  If it's
 // unknown, the new host is registered and its Hit/Miss status recorded.
-func (h hostInfoMap) registerHost(hostname string) string {
+func (h *hostInfoMap) registerHost(hostname string) string {
 	var n *hostInfo
-	if _, seen := h[hostname]; !seen {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if _, seen := h.hosts[hostname]; !seen {
 		n = new(hostInfo)
 		if strContains(cfg.InstanceLabel.Instances, hostname) {
 			n.labelVal = cfg.InstanceLabel.Hit
@@ -79,9 +93,9 @@ func (h hostInfoMap) registerHost(hostname string) string {
 		}
 		log.Printf("New host discovered: hostname=%s, %s=%s", hostname, cfg.InstanceLabel.Name, n.labelVal)
 	} else {
-		n = h[hostname]
+		n = h.hosts[hostname]
 	}
 	n.lastSeen = time.Now().UTC()
-	h[hostname] = n
+	h.hosts[hostname] = n
 	return n.labelVal
 }
