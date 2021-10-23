@@ -10,6 +10,7 @@ import (
 // Flags are the command line Flags
 type Flags struct {
 	Config string
+	Debug  bool
 }
 
 // Config contains the njmon_exporter configuration data
@@ -52,6 +53,7 @@ func ParseConfig(filename string) (*Config, error) {
 func ParseFlags() *Flags {
 	f := new(Flags)
 	flag.StringVar(&f.Config, "config", "njmon_exporter.yml", "Path to njmon_exporter configuration file")
+	flag.BoolVar(&f.Debug, "debug", false, "Expand logging with Debug level messaging and format")
 	flag.Parse()
 	return f
 }
