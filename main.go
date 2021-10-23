@@ -1,72 +1,23 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/crooks/njmon_exporter/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gopkg.in/yaml.v2"
 )
-
-// Config contains the njmon_exporter configuration data
-type Config struct {
-	NJmon struct {
-		Address string `yaml:"address"`
-		Port    string `yaml:"port"`
-	} `yaml:"njmon"`
-	Exporter struct {
-		Address string `yaml:"address"`
-		Port    string `yaml:"port"`
-	} `yaml:"exporter"`
-	InstanceLabel struct {
-		Name      string   `yaml:"label_name"`
-		Hit       string   `yaml:"label_hit"`
-		Miss      string   `yaml:"label_miss"`
-		Instances []string `yaml:"hit_instances"`
-	} `yaml:"instance_label"`
-	AliveTimeout int `yaml:"alive_timeout"`
-}
 
 var (
-	cfg            *Config
-	flagConfigFile string // Fully-qualified path to config file
+	cfg   *config.Config
+	flags *config.Flags
 )
-
-// newConfig imports a yaml formatted config file into a Config struct
-func newConfig(filename string) (*Config, error) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	d := yaml.NewDecoder(file)
-	config := &Config{}
-	if err := d.Decode(&config); err != nil {
-		return nil, err
-	}
-	return config, nil
-}
-
-// parseFlags processes arguments passed on the command line in the format
-// standard format: --foo=bar
-func parseFlags() {
-	flag.StringVar(
-		&flagConfigFile,
-		"config",
-		"njmon_exporter.yml",
-		"Path to njmon_exporter configuration file",
-	)
-	flag.Parse()
-}
 
 func main() {
 	var err error
-	parseFlags()
-	cfg, err = newConfig(flagConfigFile)
+	flags = config.ParseFlags()
+	cfg, err = config.ParseConfig(flags.Config)
 	if err != nil {
 		log.Fatalf("Unable to parse config file: %v", err)
 	}

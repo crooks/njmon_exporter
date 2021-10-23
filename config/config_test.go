@@ -1,11 +1,11 @@
-package main
+package config
 
 import (
 	"testing"
 )
 
 func TestConfig(t *testing.T) {
-	cfg, err := newConfig("njmon_exporter.yml")
+	cfg, err := ParseConfig("njmon_exporter.yml")
 	if err != nil {
 		t.Fatalf("Failed with: %v", err)
 	}
