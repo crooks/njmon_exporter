@@ -16,3 +16,14 @@ func TestConfig(t *testing.T) {
 		t.Fatalf("Expected=9772, Got=%s", cfg.Exporter.Port)
 	}
 }
+
+func TestFlags(t *testing.T) {
+	f := ParseFlags()
+	expectingConfig := "njmon_exporter.yml"
+	if f.Config != expectingConfig {
+		t.Fatalf("Unexpected config flag: Expected=%s, Got=%s", expectingConfig, f.Config)
+	}
+	if f.Debug {
+		t.Fatal("Unexpected debug flag: Expected=false, Got=true")
+	}
+}
