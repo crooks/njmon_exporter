@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"strings"
 
+	"github.com/Masterminds/log-go"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -57,7 +57,7 @@ var (
 
 func initCollectors() {
 	defaultLabels := []string{"instance", cfg.InstanceLabel.Name}
-	log.Printf("Default labels: %v", strings.Join(defaultLabels, ","))
+	log.Debugf("Default labels: %v", strings.Join(defaultLabels, ","))
 
 	// AIX section
 	aixVersion = prometheus.NewGaugeVec(

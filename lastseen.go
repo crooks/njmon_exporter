@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
 	"sync"
 	"time"
+
+	"github.com/Masterminds/log-go"
 )
 
 // hostInfo contains the fields to be recorded against each discovered
@@ -45,10 +46,10 @@ func (h *hostInfoMap) upTest() {
 	// njmon checkins.  Even 60 seconds is a bit bonkers.
 	if cfg.AliveTimeout < 60 {
 		cfg.AliveTimeout = 60
-		log.Printf("Setting a sane Alive Timeout of %d seconds", cfg.AliveTimeout)
+		log.Warnf("Setting a sane Alive Timeout of %d seconds", cfg.AliveTimeout)
 	}
 	timeout := time.Second * time.Duration(cfg.AliveTimeout)
-	log.Printf("Host considered dead if not seen for %d seconds", int(timeout.Seconds()))
+	log.Infof("Host considered dead if not seen for %d seconds", int(timeout.Seconds()))
 	// Wait a little while on startup to give hosts a chance to check in.
 	for {
 		now := time.Now().UTC()
@@ -59,7 +60,7 @@ func (h *hostInfoMap) upTest() {
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(0))
 				// If the host was previously not alerting, this is a state change
 				if !t.alertState {
-					log.Printf("%s: host is now dead", hostname)
+					log.Warnf("%s: host is now dead", hostname)
 					t.alertState = true
 				}
 			} else {
@@ -67,7 +68,7 @@ func (h *hostInfoMap) upTest() {
 				hostUp.WithLabelValues(hostname, t.labelVal).Set(float64(1))
 				// If the host was previously alerting, this is a state change
 				if t.alertState {
-					log.Printf("%s: host has transitioned to up", hostname)
+					log.Infof("%s: host has transitioned to up", hostname)
 					t.alertState = false
 				}
 			}
@@ -91,7 +92,7 @@ func (h *hostInfoMap) registerHost(hostname string) string {
 		} else {
 			n.labelVal = cfg.InstanceLabel.Miss
 		}
-		log.Printf("New host discovered: hostname=%s, %s=%s", hostname, cfg.InstanceLabel.Name, n.labelVal)
+		log.Infof("New host discovered: hostname=%s, %s=%s", hostname, cfg.InstanceLabel.Name, n.labelVal)
 	} else {
 		n = h.hosts[hostname]
 	}

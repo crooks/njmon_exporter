@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"time"
 
+	"github.com/Masterminds/log-go"
 	"github.com/tidwall/gjson"
 )
 
@@ -31,12 +31,12 @@ func listener() {
 	go h.upTest()
 
 	// An endless loop of listening for incoming njmon connections
-	log.Printf("Listening for njmon connections on %s\n", njmonListen)
+	log.Infof("Listening for njmon connections on %s\n", njmonListen)
 	for {
 		// Listen for an incoming connection.
 		conn, err := l.Accept()
 		if err != nil {
-			log.Printf("Unable to accept njmon connection: %v", err)
+			log.Warnf("Unable to accept njmon connection: %v", err)
 			continue
 		}
 		// Handle connections in a new goroutine.
@@ -98,7 +98,7 @@ func clockDiff(timestamp string) float64 {
 	format := "2006-01-02T15:04:05"
 	t1, err := time.Parse(format, timestamp)
 	if err != nil {
-		log.Printf("Cannot parse timestamp: %s", timestamp)
+		log.Warnf("Cannot parse timestamp: %s", timestamp)
 		// return 0 in the absense of anything more meaningful
 		return 0
 	}
@@ -122,7 +122,7 @@ func handleConnection(conn net.Conn, h *hostInfoMap) {
 	reader := bufio.NewReader(conn)
 	buf, err := reader.ReadBytes('\x0a')
 	if err != nil {
-		log.Printf("Error reading njmon data: %v", err)
+		log.Errorf("Error reading njmon data: %v", err)
 		return
 	}
 	// Close the connection when you're done with it.
@@ -132,7 +132,7 @@ func handleConnection(conn net.Conn, h *hostInfoMap) {
 
 	jvalue := jp.Get("identity.hostname")
 	if !jvalue.Exists() {
-		log.Println("Unable to read hostname from njmon json")
+		log.Warn("Unable to read hostname from njmon json")
 		return
 	}
 	hostname := jvalue.String()
