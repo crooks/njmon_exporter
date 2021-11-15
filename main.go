@@ -23,13 +23,17 @@ func main() {
 		log.Fatalf("Unable to parse config file: %v", err)
 	}
 
-	if jlog.Enabled() {
-		loglevel, err := log.Atoi(cfg.Logging.LevelStr)
-		if err != nil {
-			log.Fatalf("unable to set log level: %v", err)
-		}
-		log.Current = jlog.NewJournal(loglevel)
+	// Define logging level and method
+	loglevel, err := log.Atoi(cfg.Logging.LevelStr)
+	if err != nil {
+		log.Fatalf("unable to set log level: %v", err)
 	}
+	if cfg.Logging.Journal && jlog.Enabled() {
+		log.Current = jlog.NewJournal(loglevel)
+	} else {
+		log.NewStandard().Level = loglevel
+	}
+
 	initCollectors()
 	go listener()
 	http.Handle("/metrics", promhttp.Handler())
