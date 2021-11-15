@@ -33,8 +33,6 @@ cloud.google.com/go/storage v1.10.0/go.mod h1:FLPqc6j+Ki4BU591ie1oL6qBQGu2Bl/tZ9
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/Masterminds/log-go v0.4.0 h1:RkiJ3U65qjGtHRfV2T74DurURYDDz0sBs7U383hC3Qs=
-github.com/Masterminds/log-go v0.4.0/go.mod h1:xPgU2yZAUbQCkvzB2I8OaqV5OFqOmq907g++YvJDL5Y=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
@@ -55,8 +53,10 @@ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDk
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf h1:iW4rZ826su+pqaw19uhpSCzhj44qo35pNgKFGqzDKkU=
 github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
-github.com/crooks/jlog v0.0.0-20211106184516-74fe826bb627 h1:pVr6T0gvSxUpo7QEoyW4gxG4ZifXK6s0gAR5v3XEJ6Y=
-github.com/crooks/jlog v0.0.0-20211106184516-74fe826bb627/go.mod h1:TOBH+z8pAjVypNzmyOq62anS1p898fxdZr0PSWyHfDw=
+github.com/crooks/jlog v0.0.0-20211114164956-865f9c8ec45f h1:V6BMEgw7qb/up7WJ3Fh4hO0CtKDHdW0sABPtGCiij3Q=
+github.com/crooks/jlog v0.0.0-20211114164956-865f9c8ec45f/go.mod h1:TOBH+z8pAjVypNzmyOq62anS1p898fxdZr0PSWyHfDw=
+github.com/crooks/log-go v0.4.1 h1:YVUpOxLAwCW0DWcxE6g4xEeMhODljWyNmGG09a/aGlw=
+github.com/crooks/log-go v0.4.1/go.mod h1:xPgU2yZAUbQCkvzB2I8OaqV5OFqOmq907g++YvJDL5Y=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

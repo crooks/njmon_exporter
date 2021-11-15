@@ -24,7 +24,11 @@ func main() {
 	}
 
 	if jlog.Enabled() {
-		log.Current = jlog.New()
+		loglevel, err := log.Atoi(cfg.Logging.LevelStr)
+		if err != nil {
+			log.Fatalf("unable to set log level: %v", err)
+		}
+		log.Current = jlog.NewJournal(loglevel)
 	}
 	initCollectors()
 	go listener()

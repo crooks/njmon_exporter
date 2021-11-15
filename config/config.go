@@ -19,6 +19,10 @@ type Config struct {
 		Address string `yaml:"address"`
 		Port    string `yaml:"port"`
 	} `yaml:"njmon"`
+	Logging struct {
+		Journal  bool   `yaml:"journal"`
+		LevelStr string `yaml:"level"`
+	} `yaml:"logging"`
 	Exporter struct {
 		Address string `yaml:"address"`
 		Port    string `yaml:"port"`
@@ -32,6 +36,13 @@ type Config struct {
 	AliveTimeout int `yaml:"alive_timeout"`
 }
 
+func newConfig() *Config {
+	config := &Config{}
+	config.Logging.LevelStr = "info"
+	config.Logging.Journal = true
+	return config
+}
+
 // ParseConfig imports a yaml formatted config file into a Config struct
 func ParseConfig(filename string) (*Config, error) {
 	file, err := os.Open(filename)
@@ -40,8 +51,8 @@ func ParseConfig(filename string) (*Config, error) {
 	}
 	defer file.Close()
 
+	config := newConfig()
 	d := yaml.NewDecoder(file)
-	config := &Config{}
 	if err := d.Decode(&config); err != nil {
 		return nil, err
 	}

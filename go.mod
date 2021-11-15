@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/Masterminds/log-go v0.4.0
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/crooks/jlog v0.0.0-20211106184516-74fe826bb627
+	github.com/crooks/jlog v0.0.0-20211114164956-865f9c8ec45f
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.32.1 // indirect
@@ -15,3 +15,5 @@ require (
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
+
+replace github.com/Masterminds/log-go v0.4.0 => github.com/crooks/log-go v0.4.1
