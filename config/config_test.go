@@ -15,11 +15,11 @@ func TestConfig(t *testing.T) {
 	if cfg.Exporter.Port != "9772" {
 		t.Fatalf("Expected=9772, Got=%s", cfg.Exporter.Port)
 	}
-	if !cfg.Logging.Journal {
-		t.Fatal("Expected Logging.Journal to be True")
+	if cfg.Logging.Journal {
+		t.Fatal("Expected Logging.Journal to be False")
 	}
-	if cfg.Logging.LevelStr != "Info" {
-		t.Fatalf("Unexpected Logging.Level: Expected=Info, Got=%s", cfg.Logging.LevelStr)
+	if cfg.Logging.LevelStr != "info" {
+		t.Fatalf("Unexpected Logging.Level: Expected=info, Got=%s", cfg.Logging.LevelStr)
 	}
 }
 

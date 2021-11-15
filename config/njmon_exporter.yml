@@ -3,12 +3,12 @@
 njmon:
   address: 127.0.0.1
   port: 8086
-logging:
-  journal: yes
-  level: info
 exporter:
   address: 127.0.0.1
   port: 9772
+logging:
+  journal: no
+  level: info
 # After how many seconds should a host be considered dead
 alive_timeout: 300
 instance_label:

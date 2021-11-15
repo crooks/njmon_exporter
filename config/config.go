@@ -38,8 +38,14 @@ type Config struct {
 
 func newConfig() *Config {
 	config := &Config{}
+	// Set some (hopefully) sane defaults
 	config.Logging.LevelStr = "info"
-	config.Logging.Journal = true
+	config.Logging.Journal = false
+	config.NJmon.Address = "127.0.0.1"
+	config.NJmon.Port = "8086"
+	config.Exporter.Address = "127.0.0.1"
+	config.Exporter.Port = "9772"
+	config.AliveTimeout = 300
 	return config
 }
 
