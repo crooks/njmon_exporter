@@ -2,8 +2,11 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/Masterminds/log-go"
@@ -40,7 +43,7 @@ func listener() {
 			continue
 		}
 		// Handle connections in a new goroutine.
-		go handleConnection(conn, h)
+		go h.connParser(conn)
 	}
 }
 
@@ -113,29 +116,46 @@ func clockDiff(timestamp string) float64 {
 	return diff.Seconds()
 }
 
-// handleConnection processes each incoming TCP connection and translates the
-// received json into Prometheus metrics.
-func handleConnection(conn net.Conn, h *hostInfoMap) {
-	//remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
-	//log.Printf("Processing connection from: %s", remote)
-	// Make a buffer to hold incoming data.
-	reader := bufio.NewReader(conn)
-	buf, err := reader.ReadBytes('\x0a')
+func (h *hostInfoMap) connParser(conn net.Conn) {
+	b, err := handleConnection(conn)
 	if err != nil {
-		log.Errorf("Error reading njmon data: %v", err)
 		return
 	}
+	h.parseNJmonJSON(gjson.ParseBytes(b))
+}
+
+// handleConnection processes each incoming TCP connection and translates the
+// received json into Prometheus metrics.
+func handleConnection(conn net.Conn) (b []byte, err error) {
 	// Close the connection when you're done with it.
-	conn.Close()
+	defer conn.Close()
+	conn.SetReadDeadline(time.Now().Add(time.Second * time.Duration(cfg.Thresholds.ConnectionTimout)))
+	// Capture the address of the incoming connection for logging purposes.
+	remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
+	log.Debugf("Processing connection from: %s", remote)
+	// Make a buffer to hold incoming data.
+	reader := bufio.NewReader(conn)
+	b, err = reader.ReadBytes('\x0a')
+	if err != nil {
+		if errors.Is(err, os.ErrDeadlineExceeded) {
+			log.Infof("%s: Connection timeout", remote)
+		} else {
+			log.Warnf("Error reading njmon data: %v", err)
+		}
+		return
+	}
+	return
+}
 
-	jp := gjson.ParseBytes(buf)
-
+// parseNJmonJSON takes a gjson result object and parses it into Prometheus metrics.
+func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	jvalue := jp.Get("identity.hostname")
 	if !jvalue.Exists() {
 		log.Warn("Unable to read hostname from njmon json")
 		return
 	}
 	hostname := jvalue.String()
+	log.Debugf("Extracted hostname=%s from njmon data", hostname)
 	instanceLabel := h.registerHost(hostname)
 
 	clockDrift.WithLabelValues(hostname, instanceLabel).Set(clockDiff(jp.Get("timestamp.UTC").String()))

@@ -33,7 +33,12 @@ type Config struct {
 		Miss      string   `yaml:"label_miss"`
 		Instances []string `yaml:"hit_instances"`
 	} `yaml:"instance_label"`
-	AliveTimeout int `yaml:"alive_timeout"`
+	Thresholds struct {
+		// AliveTimeout is the period of time (in seconds) a host is considered alive without checking in.
+		AliveTimeout int `yaml:"alive_timeout"`
+		// ConnectionTimeout is the maximum time (in seconds) to wait for data.
+		ConnectionTimout int `yaml:"connection_timeout"`
+	} `yaml:"thresholds"`
 }
 
 func newConfig() *Config {
@@ -45,7 +50,8 @@ func newConfig() *Config {
 	config.NJmon.Port = "8086"
 	config.Exporter.Address = "127.0.0.1"
 	config.Exporter.Port = "9772"
-	config.AliveTimeout = 300
+	config.Thresholds.AliveTimeout = 300
+	config.Thresholds.ConnectionTimout = 10
 	return config
 }
 

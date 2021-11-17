@@ -44,11 +44,11 @@ func strContains(l []string, s string) bool {
 func (h *hostInfoMap) upTest() {
 	// If the AliveTimeout is too short, it will mark hosts dead in between
 	// njmon checkins.  Even 60 seconds is a bit bonkers.
-	if cfg.AliveTimeout < 60 {
-		cfg.AliveTimeout = 60
-		log.Warnf("Setting a sane Alive Timeout of %d seconds", cfg.AliveTimeout)
+	if cfg.Thresholds.AliveTimeout < 60 {
+		cfg.Thresholds.AliveTimeout = 60
+		log.Warnf("Setting a sane Alive Timeout of %d seconds", cfg.Thresholds.AliveTimeout)
 	}
-	timeout := time.Second * time.Duration(cfg.AliveTimeout)
+	timeout := time.Second * time.Duration(cfg.Thresholds.AliveTimeout)
 	log.Infof("Host considered dead if not seen for %d seconds", int(timeout.Seconds()))
 	// Wait a little while on startup to give hosts a chance to check in.
 	for {

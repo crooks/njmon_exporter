@@ -15,11 +15,17 @@ func TestConfig(t *testing.T) {
 	if cfg.Exporter.Port != "9772" {
 		t.Fatalf("Expected=9772, Got=%s", cfg.Exporter.Port)
 	}
+	if cfg.Thresholds.AliveTimeout != 300 {
+		t.Errorf("Unexpected AliveTimeout.  Expected=300, Got=%d", cfg.Thresholds.AliveTimeout)
+	}
+	if cfg.Thresholds.ConnectionTimout != 10 {
+		t.Errorf("Unexpected ConnectionTimeout.  Expected=10, Got=%d", cfg.Thresholds.ConnectionTimout)
+	}
 	if cfg.Logging.Journal {
 		t.Fatal("Expected Logging.Journal to be False")
 	}
-	if cfg.Logging.LevelStr != "info" {
-		t.Fatalf("Unexpected Logging.Level: Expected=info, Got=%s", cfg.Logging.LevelStr)
+	if cfg.Logging.LevelStr != "trace" {
+		t.Fatalf("Unexpected Logging.Level: Expected=trace, Got=%s", cfg.Logging.LevelStr)
 	}
 }
 
