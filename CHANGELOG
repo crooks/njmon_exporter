@@ -1,0 +1,8 @@
+2021-11-17 v0.1.0
+    * Add a CHANGELOG.
+    * Begin tagging releases.
+    * Add support for standard and systemd journal logging.
+    * Add a "logging" section to the config to define level and whether to log to the systemd journal or not.
+    * Create some new log messages for debugging purposes.
+    * Add a configurable timeout for incoming njmon connections (connection_timeout).
+    * Put timeouts in a new, "thresholds" section of the config yaml
