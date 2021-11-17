@@ -43,7 +43,7 @@ func listener() {
 			continue
 		}
 		// Handle connections in a new goroutine.
-		go h.connParser(conn)
+		go h.connHandle(conn)
 	}
 }
 
@@ -116,35 +116,27 @@ func clockDiff(timestamp string) float64 {
 	return diff.Seconds()
 }
 
-func (h *hostInfoMap) connParser(conn net.Conn) {
-	b, err := handleConnection(conn)
-	if err != nil {
-		return
-	}
-	h.parseNJmonJSON(gjson.ParseBytes(b))
-}
-
-// handleConnection processes each incoming TCP connection and translates the
-// received json into Prometheus metrics.
-func handleConnection(conn net.Conn) (b []byte, err error) {
-	// Close the connection when you're done with it.
+// connHandle processes each incoming TCP connection.  It reads a byte string from the connection and, if it's deemed
+// valid, hands it to the Prometheus metric parser.
+func (h *hostInfoMap) connHandle(conn net.Conn) {
+	// Close the connection when we're done with it.
 	defer conn.Close()
+	// Extract the remote address from the connection string
+	remoteAddr := strings.Split(conn.RemoteAddr().String(), ":")[0]
+	log.Debugf("Processing connection from: %s", remoteAddr)
+	// Set a connection timeout duration
 	conn.SetReadDeadline(time.Now().Add(time.Second * time.Duration(cfg.Thresholds.ConnectionTimout)))
-	// Capture the address of the incoming connection for logging purposes.
-	remote := strings.Split(conn.RemoteAddr().String(), ":")[0]
-	log.Debugf("Processing connection from: %s", remote)
-	// Make a buffer to hold incoming data.
 	reader := bufio.NewReader(conn)
-	b, err = reader.ReadBytes('\x0a')
+	b, err := reader.ReadBytes('\x0a')
 	if err != nil {
 		if errors.Is(err, os.ErrDeadlineExceeded) {
-			log.Infof("%s: Connection timeout", remote)
+			log.Infof("%s: Connection timeout", remoteAddr)
 		} else {
-			log.Warnf("Error reading njmon data: %v", err)
+			log.Warnf("%s: Error reading njmon data: %v", remoteAddr)
 		}
 		return
 	}
-	return
+	h.parseNJmonJSON(gjson.ParseBytes(b))
 }
 
 // parseNJmonJSON takes a gjson result object and parses it into Prometheus metrics.
