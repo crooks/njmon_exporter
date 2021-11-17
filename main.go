@@ -31,7 +31,7 @@ func main() {
 	if cfg.Logging.Journal && jlog.Enabled() {
 		log.Current = jlog.NewJournal(loglevel)
 	} else {
-		log.NewStandard().Level = loglevel
+		log.Current = log.StdLogger{Level: loglevel}
 	}
 
 	initCollectors()
