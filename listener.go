@@ -150,9 +150,12 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	log.Debugf("Extracted hostname=%s from njmon data", hostname)
 	instanceLabel := h.registerHost(hostname)
 
-	// Compare the local clock with the timestamp provided by njmon
+	// Compare the local clock with the timestamp provided by njmon.  It's important to be aware that these two clocks
+	// will not be perfectly aligned!  There is latency introduced between NJmon capturing a timestamp and
+	// njmon_exporter comparing it to the local clock.  The purpose of this metric is to provide a means to generate
+	// an alert if a timestamp is off by several seconds, not several milliseconds!
 	driftSecs := clockDiff(jp.Get("timestamp.UTC").String())
-	log.Debugf("%s: Clock difference=%d seconds", hostname, driftSecs)
+	log.Debugf("%s: Clock difference=%f seconds", hostname, driftSecs)
 	clockDrift.WithLabelValues(hostname, instanceLabel).Set(driftSecs)
 
 	// Uptime has only minute level granularity but we convert it to seconds for metric consistency.
