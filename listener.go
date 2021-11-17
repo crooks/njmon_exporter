@@ -150,7 +150,11 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	log.Debugf("Extracted hostname=%s from njmon data", hostname)
 	instanceLabel := h.registerHost(hostname)
 
-	clockDrift.WithLabelValues(hostname, instanceLabel).Set(clockDiff(jp.Get("timestamp.UTC").String()))
+	// Compare the local clock with the timestamp provided by njmon
+	driftSecs := clockDiff(jp.Get("timestamp.UTC").String())
+	log.Debugf("%s: Clock difference=%d seconds", hostname, driftSecs)
+	clockDrift.WithLabelValues(hostname, instanceLabel).Set(driftSecs)
+
 	// Uptime has only minute level granularity but we convert it to seconds for metric consistency.
 	uptimeDays := jp.Get("uptime.days").Float()
 	uptimeHours := jp.Get("uptime.hours").Float()
