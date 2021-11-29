@@ -41,20 +41,6 @@ type Config struct {
 	} `yaml:"thresholds"`
 }
 
-func newConfig() *Config {
-	config := &Config{}
-	// Set some (hopefully) sane defaults
-	config.Logging.LevelStr = "info"
-	config.Logging.Journal = false
-	config.NJmon.Address = "127.0.0.1"
-	config.NJmon.Port = "8086"
-	config.Exporter.Address = "127.0.0.1"
-	config.Exporter.Port = "9772"
-	config.Thresholds.AliveTimeout = 300
-	config.Thresholds.ConnectionTimout = 10
-	return config
-}
-
 // ParseConfig imports a yaml formatted config file into a Config struct
 func ParseConfig(filename string) (*Config, error) {
 	file, err := os.Open(filename)
@@ -63,7 +49,7 @@ func ParseConfig(filename string) (*Config, error) {
 	}
 	defer file.Close()
 
-	config := newConfig()
+	config := &Config{}
 	d := yaml.NewDecoder(file)
 	if err := d.Decode(&config); err != nil {
 		return nil, err
