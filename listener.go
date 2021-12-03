@@ -132,7 +132,7 @@ func (h *hostInfoMap) connHandle(conn net.Conn) {
 		if errors.Is(err, os.ErrDeadlineExceeded) {
 			log.Infof("%s: Connection timeout", remoteAddr)
 		} else {
-			log.Warnf("%s: Error reading njmon data: %v", remoteAddr)
+			log.Warnf("%s: Error reading njmon data: %v", remoteAddr, err)
 		}
 		return
 	}
