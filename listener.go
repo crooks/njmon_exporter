@@ -95,6 +95,8 @@ func cpuLogical(hostname, instanceLabel string, result gjson.Result) {
 func memPages(hostname, instanceLabel string, result gjson.Result) {
 	for psize, f := range result.Map() {
 		memPageFaults.WithLabelValues(hostname, instanceLabel, psize).Set(f.Get("pgexct").Float())
+		memPageIns.WithLabelValues(hostname, instanceLabel, psize).Set(f.Get("pgins").Float())
+		memPageOuts.WithLabelValues(hostname, instanceLabel, psize).Set(f.Get("pgouts").Float())
 	}
 }
 

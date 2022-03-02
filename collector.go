@@ -37,6 +37,8 @@ var (
 	memMin         *prometheus.GaugeVec
 	memOnline      *prometheus.GaugeVec
 	memPageFaults  *prometheus.GaugeVec
+	memPageIns     *prometheus.GaugeVec
+	memPageOuts    *prometheus.GaugeVec
 	memPgspFree    *prometheus.GaugeVec
 	memPgspRsvd    *prometheus.GaugeVec
 	memPgspTotal   *prometheus.GaugeVec
@@ -344,6 +346,20 @@ func initCollectors() {
 		},
 		append(defaultLabels, "psize"),
 	)
+	memPageIns = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_page_ins",
+			Help: "Number of pages paged in",
+		},
+		append(defaultLabels, "psize"),
+	)
+	memPageOuts = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_page_outs",
+			Help: "Number of pages paged out",
+		},
+		append(defaultLabels, "psize"),
+	)
 	netPktRx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_rx_total",
@@ -423,6 +439,8 @@ func initCollectors() {
 	prometheus.MustRegister(memMin)
 	prometheus.MustRegister(memOnline)
 	prometheus.MustRegister(memPageFaults)
+	prometheus.MustRegister(memPageIns)
+	prometheus.MustRegister(memPageOuts)
 	prometheus.MustRegister(memPgspFree)
 	prometheus.MustRegister(memPgspRsvd)
 	prometheus.MustRegister(memPgspTotal)
