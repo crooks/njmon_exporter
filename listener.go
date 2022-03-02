@@ -91,6 +91,13 @@ func cpuLogical(hostname, instanceLabel string, result gjson.Result) {
 	}
 }
 
+// memPages iterates through the njmon memory_pages and writes a set of metrics for each page size.
+func memPages(hostname, instanceLabel string, result gjson.Result) {
+	for psize, f := range result.Map() {
+		memPageFaults.WithLabelValues(hostname, instanceLabel, psize).Set(f.Get("pgexct").Float())
+	}
+}
+
 // clockDiff returns the difference (in seconds) between a supplied timestamp and local UTC
 func clockDiff(timestamp string) float64 {
 	/*
@@ -205,4 +212,6 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	filesystems(hostname, instanceLabel, jp.Get("filesystems"))
 	// network_adapters
 	netAdapters(hostname, instanceLabel, jp.Get("network_adapters"))
+	// memory_pages
+	memPages(hostname, instanceLabel, jp.Get("memory_page"))
 }

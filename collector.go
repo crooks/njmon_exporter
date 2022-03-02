@@ -36,6 +36,7 @@ var (
 	memMax         *prometheus.GaugeVec
 	memMin         *prometheus.GaugeVec
 	memOnline      *prometheus.GaugeVec
+	memPageFaults  *prometheus.GaugeVec
 	memPgspFree    *prometheus.GaugeVec
 	memPgspRsvd    *prometheus.GaugeVec
 	memPgspTotal   *prometheus.GaugeVec
@@ -335,6 +336,14 @@ func initCollectors() {
 		},
 		defaultLabels,
 	)
+	// Memory Paging
+	memPageFaults = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_mem_page_faults",
+			Help: "Number of page faults",
+		},
+		append(defaultLabels, "psize"),
+	)
 	netPktRx = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_net_pkt_rx_total",
@@ -413,6 +422,7 @@ func initCollectors() {
 	prometheus.MustRegister(memMax)
 	prometheus.MustRegister(memMin)
 	prometheus.MustRegister(memOnline)
+	prometheus.MustRegister(memPageFaults)
 	prometheus.MustRegister(memPgspFree)
 	prometheus.MustRegister(memPgspRsvd)
 	prometheus.MustRegister(memPgspTotal)
