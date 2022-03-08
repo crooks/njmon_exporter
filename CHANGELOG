@@ -1,3 +1,6 @@
+2022-xx-xx v0.1.x
+    * Add metrics for memory_pages (paging and page faults)
+    
 2021-11-17 v0.1.0
     * Add a CHANGELOG.
     * Begin tagging releases.
