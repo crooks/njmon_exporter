@@ -47,6 +47,24 @@ func listener() {
 	}
 }
 
+func disks(hostname, instanceLabel string, result gjson.Result) {
+	for device, k := range result.Map() {
+		// vg = Volume Group
+		vg := k.Get("vg").String()
+		// The following metrics need converting from MB to Bytes
+		size := k.Get("size_mb").Float() * mb
+		free := k.Get("free_mb").Float() * mb
+		read := k.Get("read_mbps").Float() * mb
+		write := k.Get("write_mbps").Float() * mb
+		diskBlockSize.WithLabelValues(hostname, instanceLabel, device, vg).Set(k.Get("blocksize").Float())
+		diskBusy.WithLabelValues(hostname, instanceLabel, device, vg).Set(k.Get("busy").Float())
+		diskFree.WithLabelValues(hostname, instanceLabel, device, vg).Set(free)
+		diskRead.WithLabelValues(hostname, instanceLabel, device, vg).Set(read)
+		diskSize.WithLabelValues(hostname, instanceLabel, device, vg).Set(size)
+		diskWrite.WithLabelValues(hostname, instanceLabel, device, vg).Set(write)
+	}
+}
+
 // filesystems iterates over the content of the njmon filesystems data and
 // produces a set of metrics for each filesystem.
 func filesystems(hostname, instanceLabel string, result gjson.Result) {
@@ -210,6 +228,8 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	cpuTotWait.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.wait_pct").Float() / 100)
 	// cpu_logical
 	cpuLogical(hostname, instanceLabel, jp.Get("cpu_logical"))
+	// disks
+	disks(hostname, instanceLabel, jp.Get("disks"))
 	// filesystems
 	filesystems(hostname, instanceLabel, jp.Get("filesystems"))
 	// network_adapters

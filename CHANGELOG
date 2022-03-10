@@ -1,5 +1,6 @@
 2022-xx-xx v0.1.x
     * Add metrics for memory_pages (paging and page faults)
+    * Add metrics for disks (blocksize, busy, free, read, size, write)
     
 2021-11-17 v0.1.0
     * Add a CHANGELOG.

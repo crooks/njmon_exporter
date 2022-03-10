@@ -29,6 +29,12 @@ var (
 	cpuVirtMax     *prometheus.GaugeVec
 	cpuVirtMin     *prometheus.GaugeVec
 	cpuVirtOnline  *prometheus.GaugeVec
+	diskBlockSize  *prometheus.GaugeVec
+	diskBusy       *prometheus.GaugeVec
+	diskFree       *prometheus.GaugeVec
+	diskRead       *prometheus.GaugeVec
+	diskSize       *prometheus.GaugeVec
+	diskWrite      *prometheus.GaugeVec
 	filesystemFree *prometheus.GaugeVec
 	filesystemSize *prometheus.GaugeVec
 	hostUp         *prometheus.GaugeVec
@@ -223,6 +229,49 @@ func initCollectors() {
 			Help: "Online number of virtual CPUs in the LPAR",
 		},
 		defaultLabels,
+	)
+	// Disks
+	diskBlockSize = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_blocksize_bytes",
+			Help: "Blocksize of the disk in Bytes",
+		},
+		append(defaultLabels, "device", "vg"),
+	)
+	diskBusy = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_busy_per_second",
+			Help: "Percent of time the disk is busy",
+		},
+		append(defaultLabels, "device", "vg"),
+	)
+	diskFree = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_free_bytes",
+			Help: "Free space on the disk in Bytes",
+		},
+		append(defaultLabels, "device", "vg"),
+	)
+	diskRead = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_read_bytes_per_second",
+			Help: "Read Bytes per Second",
+		},
+		append(defaultLabels, "device", "vg"),
+	)
+	diskSize = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_size_bytes",
+			Help: "Capacity of the disk in Bytes",
+		},
+		append(defaultLabels, "device", "vg"),
+	)
+	diskWrite = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_disk_write_bytes_per_second",
+			Help: "Write Bytes per Second",
+		},
+		append(defaultLabels, "device", "vg"),
 	)
 	// Filesystems
 	filesystemSize = prometheus.NewGaugeVec(
@@ -431,6 +480,12 @@ func initCollectors() {
 	prometheus.MustRegister(cpuVirtMax)
 	prometheus.MustRegister(cpuVirtMin)
 	prometheus.MustRegister(cpuVirtOnline)
+	prometheus.MustRegister(diskBlockSize)
+	prometheus.MustRegister(diskBusy)
+	prometheus.MustRegister(diskFree)
+	prometheus.MustRegister(diskRead)
+	prometheus.MustRegister(diskSize)
+	prometheus.MustRegister(diskWrite)
 	prometheus.MustRegister(filesystemSize)
 	prometheus.MustRegister(filesystemFree)
 	prometheus.MustRegister(hostUp)
