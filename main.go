@@ -24,14 +24,14 @@ func main() {
 	}
 
 	// Define logging level and method
-	loglevel, err := log.Atoi(cfg.Logging.LevelStr)
+	loglevel, err := log.ParseLevel(cfg.Logging.LevelStr)
 	if err != nil {
 		log.Fatalf("unable to set log level: %v", err)
 	}
 	if cfg.Logging.Journal && jlog.Enabled() {
 		log.Current = jlog.NewJournal(loglevel)
 	} else {
-		log.Current = log.StdLogger{Level: loglevel}
+		log.Current = log.StdLogger{Level: int(loglevel)}
 	}
 
 	initCollectors()
