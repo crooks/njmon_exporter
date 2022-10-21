@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/log-go"
 	"github.com/crooks/jlog"
+	loglevel "github.com/crooks/log-go-level"
 	"github.com/crooks/njmon_exporter/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -24,14 +25,14 @@ func main() {
 	}
 
 	// Define logging level and method
-	loglevel, err := log.ParseLevel(cfg.Logging.LevelStr)
+	loglev, err := loglevel.ParseLevel(cfg.Logging.LevelStr)
 	if err != nil {
 		log.Fatalf("unable to set log level: %v", err)
 	}
 	if cfg.Logging.Journal && jlog.Enabled() {
-		log.Current = jlog.NewJournal(loglevel)
+		log.Current = jlog.NewJournal(loglev)
 	} else {
-		log.Current = log.StdLogger{Level: int(loglevel)}
+		log.Current = log.StdLogger{Level: loglev}
 	}
 
 	initCollectors()
