@@ -226,6 +226,9 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	cpuTotKern.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.kern_pct").Float() / 100)
 	cpuTotUser.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.user_pct").Float() / 100)
 	cpuTotWait.WithLabelValues(hostname, instanceLabel).Set(jp.Get("cpu_util.wait_pct").Float() / 100)
+	loadAvg1.WithLabelValues(hostname, instanceLabel).Set(jp.Get("kernel.load_avg_1_min").Float())
+	loadAvg5.WithLabelValues(hostname, instanceLabel).Set(jp.Get("kernel.load_avg_5_min").Float())
+	loadAvg15.WithLabelValues(hostname, instanceLabel).Set(jp.Get("kernel.load_avg_15_min").Float())
 	// cpu_logical
 	cpuLogical(hostname, instanceLabel, jp.Get("cpu_logical"))
 	// disks

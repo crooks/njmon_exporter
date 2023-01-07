@@ -38,6 +38,9 @@ var (
 	filesystemFree *prometheus.GaugeVec
 	filesystemSize *prometheus.GaugeVec
 	hostUp         *prometheus.GaugeVec
+	loadAvg1       *prometheus.GaugeVec
+	loadAvg5       *prometheus.GaugeVec
+	loadAvg15      *prometheus.GaugeVec
 	memDesired     *prometheus.GaugeVec
 	memMax         *prometheus.GaugeVec
 	memMin         *prometheus.GaugeVec
@@ -288,6 +291,28 @@ func initCollectors() {
 		},
 		append(defaultLabels, "device", "mountpoint"),
 	)
+	// CPU Load Average
+	loadAvg1 = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_load1",
+			Help: "1m load average",
+		},
+		defaultLabels,
+	)
+	loadAvg5 = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_load5",
+			Help: "5m load average",
+		},
+		defaultLabels,
+	)
+	loadAvg15 = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "njmon_load15",
+			Help: "15m load average",
+		},
+		defaultLabels,
+	)
 	// Memory
 	memDesired = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -489,6 +514,9 @@ func initCollectors() {
 	prometheus.MustRegister(filesystemSize)
 	prometheus.MustRegister(filesystemFree)
 	prometheus.MustRegister(hostUp)
+	prometheus.MustRegister(loadAvg1)
+	prometheus.MustRegister(loadAvg5)
+	prometheus.MustRegister(loadAvg15)
 	prometheus.MustRegister(memDesired)
 	prometheus.MustRegister(memMax)
 	prometheus.MustRegister(memMin)
