@@ -175,6 +175,11 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	}
 	hostname := jvalue.String()
 	log.Debugf("Extracted hostname=%s from njmon data", hostname)
+	// Now we have a hostname, we can determine if it should be excluded.
+	if exclude.Match(hostname) {
+		log.Debugf("%s: Is excluded from processing", hostname)
+		return
+	}
 	instanceLabel := h.registerHost(hostname)
 
 	// Compare the local clock with the timestamp provided by njmon.  It's important to be aware that these two clocks

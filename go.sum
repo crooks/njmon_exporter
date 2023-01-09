@@ -60,6 +60,8 @@ github.com/crooks/jlog v0.0.0-20221021140856-377a64c64820 h1:4GaW1vc6RhozR9I99tN
 github.com/crooks/jlog v0.0.0-20221021140856-377a64c64820/go.mod h1:TJ0gp4hr7H3cC/AuOgpyT0EOIrP2cVOUQvpgF6Qnpiw=
 github.com/crooks/log-go-level v0.0.0-20221021134405-8ea229e5ea34 h1:hgTP5Ektdr49gGUXrBfZ8A63kemJDMf9oY7fUBLo42w=
 github.com/crooks/log-go-level v0.0.0-20221021134405-8ea229e5ea34/go.mod h1:+wE03blNv2HxW+axth7u2+i1VCOS2Q5exPPugQ6JwPU=
+github.com/crooks/strmatch v0.0.0-20230108173941-d817c9c60fe8 h1:UgROa+WB8GyrkDid/rLzXDTyuhvDY1ylYBVBmZqdGfE=
+github.com/crooks/strmatch v0.0.0-20230108173941-d817c9c60fe8/go.mod h1:ZPcw+kP8qHk/iYr9FtA4QvZEAXdjp86KKPf9h6aqc3w=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

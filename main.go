@@ -8,13 +8,33 @@ import (
 	"github.com/crooks/jlog"
 	loglevel "github.com/crooks/log-go-level"
 	"github.com/crooks/njmon_exporter/config"
+	"github.com/crooks/strmatch"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
-	cfg   *config.Config
-	flags *config.Flags
+	cfg     *config.Config
+	flags   *config.Flags
+	exclude *strmatch.Matcher
 )
+
+func initExclude() {
+	exclude = strmatch.NewMatcher()
+	for _, s := range cfg.Exclude.Str {
+		err := exclude.SAdd(s)
+		if err != nil {
+			log.Warnf("%s: Unable to add exclusion string: %v", s, err)
+			continue
+		}
+	}
+	for _, r := range cfg.Exclude.Regex {
+		err := exclude.RAdd(r)
+		if err != nil {
+			log.Warnf("%s: Unable to add exclusion Regular Expression: %v", r, err)
+			continue
+		}
+	}
+}
 
 func main() {
 	var err error
@@ -35,6 +55,7 @@ func main() {
 		log.Current = log.StdLogger{Level: loglev}
 	}
 
+	initExclude()
 	initCollectors()
 	go listener()
 	http.Handle("/metrics", promhttp.Handler())

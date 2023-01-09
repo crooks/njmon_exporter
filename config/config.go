@@ -27,6 +27,10 @@ type Config struct {
 		Address string `yaml:"address"`
 		Port    string `yaml:"port"`
 	} `yaml:"exporter"`
+	Exclude struct {
+		Regex []string `yaml:"regexs"`
+		Str   []string `yaml:"strings"`
+	} `yaml:"exclude_hosts"`
 	InstanceLabel struct {
 		Name      string   `yaml:"label_name"`
 		Hit       string   `yaml:"label_hit"`

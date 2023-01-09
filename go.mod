@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/log-go v1.0.0
 	github.com/crooks/jlog v0.0.0-20221021140856-377a64c64820
 	github.com/crooks/log-go-level v0.0.0-20221021134405-8ea229e5ea34
+	github.com/crooks/strmatch v0.0.0-20230108173941-d817c9c60fe8
 	github.com/prometheus/client_golang v1.12.2
 	github.com/prometheus/common v0.35.0 // indirect
 	github.com/tidwall/gjson v1.14.1
