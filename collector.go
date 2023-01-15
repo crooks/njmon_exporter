@@ -387,14 +387,14 @@ func initCollectors() {
 	memRealProcess = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_process",
-			Help: "Memory real total in Bytes",
+			Help: "Memory real process in Bytes",
 		},
 		defaultLabels,
 	)
 	memRealSystem = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_system",
-			Help: "Memory real total in Bytes",
+			Help: "Memory real system in Bytes",
 		},
 		defaultLabels,
 	)
@@ -408,7 +408,7 @@ func initCollectors() {
 	memRealUser = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "njmon_mem_real_user",
-			Help: "Memory real total in Bytes",
+			Help: "Memory real user in Bytes",
 		},
 		defaultLabels,
 	)
