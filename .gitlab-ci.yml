@@ -42,5 +42,4 @@ analyse-sonar:
     - /opt/sonar-scanner/bin/sonar-scanner
   allow_failure: true
   only:
-    - master
-    - sonar-check
+    - main
