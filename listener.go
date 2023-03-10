@@ -72,6 +72,7 @@ func filesystems(hostname, instanceLabel string, result gjson.Result) {
 		// Required labels for filesystems
 		device := f.Get("device").String()
 		mount := f.Get("mount").String()
+		log.Debugf("Processing filesystem: host=%s, device=%s, mount=%s", hostname, device, mount)
 		// Filesystem metrics
 		size := f.Get("size_mb").Float() * mb
 		free := f.Get("free_mb").Float() * mb
@@ -163,6 +164,7 @@ func (h *hostInfoMap) connHandle(conn net.Conn) {
 		}
 		return
 	}
+	log.Debugf("Read %d Bytes from %s", len(b), remoteAddr)
 	h.parseNJmonJSON(gjson.ParseBytes(b))
 }
 
