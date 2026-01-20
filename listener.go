@@ -237,7 +237,12 @@ func (h *hostInfoMap) parseNJmonJSON(jp gjson.Result) {
 	loadAvg5.WithLabelValues(hostname, instanceLabel).Set(jp.Get("kernel.load_avg_5_min").Float())
 	loadAvg15.WithLabelValues(hostname, instanceLabel).Set(jp.Get("kernel.load_avg_15_min").Float())
 	// cpu_logical
-	cpuLogical(hostname, instanceLabel, jp.Get("cpu_logical"))
+	// Somewhere in the history of njmon, they changed the JSON section name by pluralising "logical"
+	if jp.Get("cpu_logical").Exists() {
+		cpuLogical(hostname, instanceLabel, jp.Get("cpu_logical"))
+	} else {
+		cpuLogical(hostname, instanceLabel, jp.Get("cpu_logicals"))
+	}
 	// disks
 	disks(hostname, instanceLabel, jp.Get("disks"))
 	// filesystems
