@@ -2,22 +2,10 @@
 
 Prometheus exporter for IBM AIX systems running [njmon](http://nmon.sourceforge.net/pmwiki.php?n=Site.NjmonManualPage).
 
-# WIP - This exporter is currently in development.
-- [x] Create a TCP server for inbound njmon connections
-- [x] Export initial metrics to Prometheus exporter format and serve them
-- [x] Add support for a yaml configuration file
-- [x] Register an exporter port in the [Prometheus Wiki](https://github.com/prometheus/prometheus/wiki/Default-port-allocations)
-- [x] Support command line flags
-- [x] Logging
-- [ ] Config validation support
-- [ ] Provide decent unit test coverage
-- [x] Add a method for appending labels to selected source hosts (E.g. Dev vs. Prod)
-- [ ] Declare it ready for use
-
 ## Overview
 njmon_exporter provides an interface between Prometheus and the AIX njmon tool (http://nmon.sourceforge.net/pmwiki.php?n=Site.Njmon).  It listens for the connections described below:
 * njmon instances running on IBM AIX systems (Default port: 8086)
-* Promtheus scrapes (Default port: 9772)
+* Prometheus scrapes (Default port: 9772)
 
 ## Installation
 ### Install and run the exporter
